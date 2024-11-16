@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LogInButton,
   LogIned,
@@ -11,59 +11,134 @@ import {
 } from "@scratch-auth/nextjs";
 import { eventDispatch } from "@scratch-auth/nextjs/src/cookie/dispatchEvent";
 import { ScPayAccountSET } from "@/components/scpay/set";
-import { User } from "@/hooks/useUser";
 import { Button } from "@nextui-org/react";
 import { setCookie } from "cookies-next/client";
+import { ScPayUserType } from "@/utils/supabase/scpay";
+import ScPayUser from "./scpayUser";
+import { reqScPayAPI } from "@/utils/supabase/scpay/req";
+import toast from "react-hot-toast";
 
-function LinkScratch({ scpay_user }: { scpay_user: User | null }) {
-  const [localUser, setLocalUser] = useState<User | null>(scpay_user);
+function LinkScratch() {
+  const { scpayUser, scpayUser_loading } = ScPayUser();
+  const [localUser, setLocalUser] = useState<ScPayUserType | null>(null);
   const { user, loading: userLoading } = useUser();
   const [loading, setLoading] = useState(false);
+  const [button, setButton] = useState<React.ReactNode | null>(null); // ボタンの状態を管理
 
+  // 認証が成功した場合にリダイレクト
   const onScratchAuthLogin = async () => {
     setCookie("scratch-auth-redirect", "/dashboard/account");
-    // localStorage.setItem("scratch-auth-redirect", "/dashboard/account");
-    const success = await ScratchAuthLogin(); // ログイン処理を実行
-    if (!success) {
-      eventDispatch(new Event("sah-sessionchange"));
+    const success = await ScratchAuthLogin();
+    if (!success) eventDispatch(new Event("sah-sessionchange"));
+  };
+
+  // スクラッチアカウントの連携・解除処理
+  const handleLinkUnlinkScratch = async (link: string | null) => {
+    if (localUser && user) {
+      setLoading(true);
+      const res = await reqScPayAPI({
+        url: "/api/scpay/account/set",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: localUser.id,
+          item: "scratch",
+          data: link,
+        }),
+      });
+      if (res.ok) {
+        setLocalUser({ ...localUser, scratch: link });
+        console.log(link ? "連携成功" : "連携解除成功", res.message);
+        toast.success(link ? "アカウント連携に成功しました" : "アカウント連携を解除しました");
+      } else {
+        console.error("処理失敗", res.message, res.error_message);
+        toast.error(
+          res.error_message || link
+            ? "アカウント連携に失敗しました"
+            : "アカウント連携解除に失敗しました"
+        );
+      }
+      setLoading(false);
     }
   };
 
-  async function handleUpdateLinkScratch() {
-    if (localUser && user) {
-      setLoading(true);
-      const result = await ScPayAccountSET(
-        localUser.id,
-        "link_scratch",
-        user.username
+  // ローディング中かつ`localUser`がある場合、更新が完了するまでボタンを無効化
+  const renderButton = () => {
+    if (scpayUser_loading || userLoading) {
+      return (
+        <Button color="primary" isLoading>
+          読み込み中
+        </Button>
       );
-      if (result.success) {
-        console.log("データの更新が成功:", result.message);
-        setLocalUser({ ...localUser, link_scratch: user.username }); // 状態を更新
-      } else {
-        console.error("データの更新に失敗:", result.message, result.error);
-      }
-      setLoading(false);
     }
-  }
 
-  async function handleUpdateUnLinkScratch() {
-    if (localUser && user) {
-      setLoading(true);
-      const result = await ScPayAccountSET(localUser.id, "link_scratch", null);
-      if (result.success) {
-        console.log("データの更新が成功:", result.message);
-        setLocalUser({ ...localUser, link_scratch: null }); // 状態を更新
-      } else {
-        console.error("データの更新に失敗:", result.message, result.error);
-      }
-      setLoading(false);
+    if (!localUser) {
+      return (
+        <Button onClick={() => window.location.reload()} color="danger">
+          アカウント情報が取得出来ませんでした
+        </Button>
+      );
     }
-  }
+
+    if (localUser?.scratch) {
+      return (
+        <>
+          <LogIned>
+            <UserButton />
+          </LogIned>
+          <Button
+            onClick={() => handleLinkUnlinkScratch(null)}
+            color="danger"
+            isLoading={loading}
+          >
+            連携解除
+          </Button>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <LogOuted>
+          <Button
+            onClick={onScratchAuthLogin}
+            color="primary"
+            isLoading={loading || userLoading}
+          >
+            ログインして連携する
+          </Button>
+        </LogOuted>
+        <LogIned>
+          {user && (
+            <Button
+              onClick={() => handleLinkUnlinkScratch(user.username)}
+              color="primary"
+              isLoading={loading}
+            >
+              アカウントを接続する
+            </Button>
+          )}
+        </LogIned>
+      </>
+    );
+  };
+
+  useEffect(() => {
+    if (!scpayUser_loading) {
+      setLocalUser(scpayUser);
+    }
+  }, [scpayUser, scpayUser_loading]);
+
+  useEffect(() => {
+    // localUser または user が変更された時にボタンを更新
+    setButton(renderButton());
+  }, [localUser, user, scpayUser, scpayUser_loading, loading, userLoading]); // 必要な依存関係を追加
 
   return (
-    <div className="flex flex-col justify-center items-start">
-      <div className="flex flex-col mb-5">
+    <div className="flex flex-col sm:!flex-row justify-between items-start w-full">
+      <div className="flex flex-col mb-5 w-full sm:!w-1/2">
         <h1 className="font-bold text-xl md:!text-2xl">
           Scratchアカウントを紐付ける
         </h1>
@@ -71,42 +146,8 @@ function LinkScratch({ scpay_user }: { scpay_user: User | null }) {
           ScPayアカウントとScratchアカウントを紐付ける。この機能を利用するとプロフィール情報やゲームの進捗状況や通貨を統合することが可能になります。
         </p>
       </div>
-      <div className="flex flex-wrap justify-start items-center gap-3">
-        {localUser?.link_scratch ? (
-          <>
-            <LogIned>
-              <UserButton />
-            </LogIned>
-            <Button
-              onClick={handleUpdateUnLinkScratch}
-              color="danger"
-              isLoading={loading}
-            >
-              連携を解除する
-            </Button>
-          </>
-        ) : (
-          <>
-            <LogOuted>
-              <Button
-                onClick={onScratchAuthLogin}
-                color="primary"
-                isLoading={loading || userLoading}
-              >
-                ログインして連携する
-              </Button>
-            </LogOuted>
-            <LogIned>
-              <Button
-                onClick={handleUpdateLinkScratch}
-                color="primary"
-                isLoading={loading} // ローディング中はボタンを無効化
-              >
-                アカウントを接続する
-              </Button>
-            </LogIned>
-          </>
-        )}
+      <div className="flex flex-wrap justify-end items-center gap-3 w-full sm:!w-1/2">
+        {button}
       </div>
     </div>
   );

@@ -23,20 +23,20 @@ export const authMiddleware =
 
 // ミドルウェア（ページ遷移の前に認証処理を実行）
 export async function middleware(request: NextRequest) {
-  // パスワード認証の処理
-  const password = process.env.SITE_PASSWORD; // 環境変数からパスワードを取得
-  const cookieStore = await cookies();
-  const authCookie = cookieStore.get("auth-token");
+  // // パスワード認証の処理
+  // const password = process.env.SITE_PASSWORD; // 環境変数からパスワードを取得
+  // const cookieStore = await cookies();
+  // const authCookie = cookieStore.get("auth-token");
 
-  if (request.nextUrl.pathname === "/password") {
-  } else {
-    // クッキーに認証トークンがない場合、パスワードを要求
-    if (!authCookie) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/password"; // パスワード入力ページにリダイレクト
-      return NextResponse.redirect(url);
-    }
-  }
+  // if (request.nextUrl.pathname === "/password") {
+  // } else {
+  //   // クッキーに認証トークンがない場合、パスワードを要求
+  //   if (!authCookie) {
+  //     const url = request.nextUrl.clone();
+  //     url.pathname = "/password"; // パスワード入力ページにリダイレクト
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
 
   // 認証トークンがあれば、そのまま次の処理へ進む
   const response = NextResponse.next();

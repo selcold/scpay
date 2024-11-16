@@ -8,12 +8,13 @@ import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUser } from "@/hooks/useUser";
+import { useScPayUser } from "@/hooks/useScPayUser";
 import { LoaderRound } from "@/components/ui/loading";
 import { setCookie } from "cookies-next/client";
+import { reqScPayAPI } from "@/utils/supabase/scpay/req";
 
 function LoginPage() {
-  const { user, loading } = useUser();
+  const { user, loading } = useScPayUser();
 
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -39,7 +40,18 @@ function LoginPage() {
 
   const onSubmit = async (data: any) => {
     setFormLoading(true);
-    const response = await fetch("/api/auth/login", {
+    setError(null)
+    // const response = await fetch("/api/auth/login", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     email: data.email,
+    //     password: data.password,
+    //   }),
+    // });
+
+    const response = await reqScPayAPI({
+      url: "/api/auth/login",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -48,19 +60,13 @@ function LoginPage() {
       }),
     });
 
-    if (response.ok) {
-      const responseData = await response.json();
-      setCookie("scpay-account-token", responseData.token, {
-        maxAge: 2592000,
-      });
-      // // JWTトークンをlocalStorageに保存
-      // localStorage.setItem("scpay-account-token", responseData.token);
+    if (response.ok && response.data) {
+      setCookie("scpay-account-token", response.data);
       console.log("ログインが成功しました");
-      redirect("/dashboard"); // ログイン後にリダイレクト
+      redirect("/dashboard");
     } else {
-      const errorData = await response.json();
-      console.warn("ログインエラー:", errorData.message, errorData.error);
-      setError(errorData.message || "ログインに失敗しました");
+      console.warn("ログインエラー:", response.message, response.error);
+      setError(response.message || "ログインに失敗しました");
     }
     setFormLoading(false);
   };

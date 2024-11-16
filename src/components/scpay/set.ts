@@ -7,7 +7,7 @@ export async function ScPayAccountSET(
 ): Promise<{ success: boolean; message: string; error?: string }> {
   try {
     // API エンドポイントにPOSTリクエストを送信
-    const response = await fetch("/api/auth/account/set", {
+    const response = await fetch("/api/scpay/account/set", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

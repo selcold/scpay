@@ -1,24 +1,32 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
-import { User } from "@/hooks/useUser";
-import { LoaderRound } from "@/components/ui/loading";
 import { Button } from "@nextui-org/button";
 import { Avatar } from "@nextui-org/react";
+import { ScPayUserType } from "@/utils/supabase/scpay";
+import ScPayUser from "./scpayUser";
+import toast from "react-hot-toast";
+import { reqScPayAPI } from "@/utils/supabase/scpay/req";
 
-function SettingAvatar({ scpay_user }: { scpay_user: User | null }) {
-  const [localUser, setLocalUser] = useState<User | null>(scpay_user);
+function SettingAvatar() {
+  const { scpayUser, scpayUser_loading } = ScPayUser();
+  const [localUser, setLocalUser] = useState<ScPayUserType | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [removeding, setRemoveding] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(
-    localUser?.profile?.image || null
-  );
+
+  // ユーザー情報が変更されたときに localUser を更新
+  useEffect(() => {
+    if (!scpayUser_loading) {
+      setLocalUser(scpayUser);
+      setImagePreview(scpayUser?.profile?.image || null); // プロフィール画像の更新
+    }
+  }, [scpayUser, scpayUser_loading]);
 
   useEffect(() => {
-    if (localUser?.profile?.image) {
-      setImagePreview(localUser.profile.image);
-    }
+    setImagePreview(localUser?.profile?.image || null);
   }, [localUser]);
 
   // 画像のプレビューとサイズチェック
@@ -43,35 +51,35 @@ function SettingAvatar({ scpay_user }: { scpay_user: User | null }) {
 
   // 画像のアップロード
   const handleImageUpload = async () => {
-    if (!image) return;
+    if (!image || !localUser) return;
 
     setUploading(true);
     try {
       const formData = new FormData();
-      formData.append("userId", `${localUser?.id}`);
+      formData.append("userId", `${localUser.id}`);
       formData.append("file", image);
 
-      const res = await fetch("/api/avatar", {
+      const res = await reqScPayAPI({
+        url: "/api/scpay/avatar",
         method: "POST",
         body: formData,
       });
-
-      if (!res.ok) {
-        const response = await res.json();
-        setImageError(response.message);
+      if (res.ok) {
+        toast.success("アバターをアップロードしました");
+        setImagePreview(res.data);
+        setLocalUser((prevUser) => {
+          if (!prevUser) return prevUser;
+          return {
+            ...prevUser,
+            profile: { ...prevUser.profile, image: res.data }, // profileのimageを更新
+          };
+        });
+      } else {
+        toast.error("アバターの更新に失敗しました");
+        setImageError(res.error_message || "アバターの更新に失敗しました");
       }
-
-      const { url } = await res.json();
-      setImageUrl(url);
-
-      setLocalUser((prevUser) => {
-        if (!prevUser) return prevUser;
-        return {
-          ...prevUser,
-          profile: { ...prevUser.profile, image: url }, // profileのimageを更新
-        };
-      });
     } catch (error) {
+      toast.error("エラーが発生しました");
       setImageError((error as Error).message); // 型キャストしてerrorの型を解決
     }
     setUploading(false);
@@ -79,53 +87,57 @@ function SettingAvatar({ scpay_user }: { scpay_user: User | null }) {
 
   // 画像の削除
   const handleImageDelete = async () => {
-    if (!imageUrl) return;
+    if (!localUser?.profile?.image) return;
 
     setRemoveding(true);
     try {
       const REQ = {
-        userId: localUser?.id,
-        imageUrl: imageUrl,
+        userId: localUser.id,
+        imageUrl: localUser.profile.image,
       };
-      const res = await fetch("/api/avatar", {
+      const res = await reqScPayAPI({
+        url: "/api/scpay/avatar",
         method: "DELETE",
         body: JSON.stringify(REQ),
       });
-
-      const response = await res.json();
-      if (!res.ok) {
-        setImageError(response.message);
+      if (res.ok) {
+        toast.success("アバターを削除しました");
+        setLocalUser((prevUser) => {
+          if (!prevUser) return prevUser;
+          return {
+            ...prevUser,
+            profile: { ...prevUser.profile, image: null }, // imageをnullに更新
+          };
+        });
+      } else {
+        toast.error("アバターの削除に失敗しました");
+        setImageError(res.error_message || "アバターの削除に失敗しました");
       }
-
-      setLocalUser((prevUser) => {
-        if (!prevUser) return prevUser;
-        return {
-          ...prevUser,
-          profile: { ...prevUser.profile, image: null }, // imageをnullに更新
-        };
-      });
     } catch (error) {
+      toast.error("エラーが発生しました");
       setImageError((error as Error).message);
     }
     setRemoveding(false);
   };
 
   return (
-    <div className="flex flex-col justify-center items-start">
-      <div className="flex flex-col mb-5">
+    <div className="flex flex-col justify-start items-start w-full">
+      <div className="flex flex-col mb-5 w-full">
         <h1 className="font-bold text-xl md:!text-2xl">アイコン設定</h1>
+        <p className="text-sm">
+          アップロード後反映に時間がかかることがあります
+        </p>
       </div>
-      <div className="flex flex-wrap justify-between items-center gap-5 w-full">
-        <div className="flex flex-col justify-center items-start gap-2">
+      <div className="flex flex-col sm:!flex-row justify-between items-start w-full">
+        <div className="flex flex-col mb-5 w-full sm:!w-1/2">
           <label
             htmlFor="user-avatar"
             className="relative w-24 h-24 rounded-full group cursor-pointer"
           >
             <Avatar
-              className="w-24 h-24"
+              className="w-24 h-24 border border-neutral-300 dark:border-neutral-800 shadow"
               alt="Profile Preview"
               src={imagePreview || "/wp-content/avatar/guest90x90.png"}
-              id={`avatar-${new Date().toISOString()}`}
             />
             <div className="absolute inset-0 rounded-full bg-neutral-500/80 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 flex items-center justify-center">
               <span className="text-white">変更</span>
@@ -141,7 +153,7 @@ function SettingAvatar({ scpay_user }: { scpay_user: User | null }) {
           </label>
           {imageError && <p className="text-red-500">{imageError}</p>}
         </div>
-        <div className="flex flex-wrap md:!flex-col gap-2 w-fit">
+        <div className="flex flex-col justify-end items-stretch gap-3 w-fit max-w-full sm:!max-w-1/2 ml-auto">
           <Button
             onClick={handleImageUpload}
             isLoading={uploading}
@@ -150,15 +162,14 @@ function SettingAvatar({ scpay_user }: { scpay_user: User | null }) {
           >
             {image ? "アイコンをアップロード" : "画像を変更してください"}
           </Button>
-          {imageUrl && (
-            <Button
-              onClick={handleImageDelete}
-              color="danger"
-              isLoading={removeding}
-            >
-              アイコンを削除
-            </Button>
-          )}
+          <Button
+            onClick={handleImageDelete}
+            color="danger"
+            isLoading={removeding}
+            isDisabled={uploading}
+          >
+            アイコンを削除
+          </Button>
         </div>
       </div>
     </div>

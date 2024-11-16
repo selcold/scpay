@@ -3,6 +3,21 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/client";
 
 export async function POST(request: Request) {
+  const header = await request.headers;
+  const authorization = header.get("authorization")?.split(" ")[1];
+
+  if (!authorization) {
+    return NextResponse.json(
+      { ok: false, message: "トークンが必要です" },
+      { status: 401 }
+    );
+  }
+  if (authorization !== process.env.SCPAY_SECRET_KEY) {
+    return NextResponse.json(
+      { ok: false, message: "無効なトークンです" },
+      { status: 403 }
+    );
+  }
   const supabase = createClient();
 
   try {
@@ -13,7 +28,7 @@ export async function POST(request: Request) {
     // ファイルが存在するか確認
     if (!file || !(file instanceof Blob)) {
       return NextResponse.json(
-        { error: "ファイルが選択されていません。" },
+        { ok: false, message: "ファイルが選択されていません" },
         { status: 400 }
       );
     }
@@ -21,7 +36,7 @@ export async function POST(request: Request) {
     // サイズ制限（512KB以下）
     if (file.size > 512 * 1024) {
       return NextResponse.json(
-        { error: "画像のサイズは512KB以下にしてください。" },
+        { ok: false, message: "画像のサイズは512KB以下にしてください" },
         { status: 400 }
       );
     }
@@ -34,7 +49,12 @@ export async function POST(request: Request) {
 
     if (error) {
       return NextResponse.json(
-        { error: "画像のアップロードに失敗しました。" },
+        {
+          ok: false,
+          message: "画像のアップロードに失敗しました",
+          error: error,
+          error_massage: error.message,
+        },
         { status: 500 }
       );
     }
@@ -50,21 +70,41 @@ export async function POST(request: Request) {
 
     if (updateError) {
       return NextResponse.json(
-        { error: "ユーザー情報の更新に失敗しました。" },
+        { ok: false, message: "ユーザー情報の更新に失敗しました" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ imageUrl }, { status: 200 });
+    return NextResponse.json({ ok: true, data: imageUrl }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: "サーバーエラーが発生しました。" },
+      {
+        ok: false,
+        message: "サーバーエラーが発生しました",
+        error: error,
+        error_massage: error,
+      },
       { status: 500 }
     );
   }
 }
 
 export async function DELETE(request: Request) {
+  const header = await request.headers;
+  const authorization = header.get("authorization")?.split(" ")[1];
+
+  if (!authorization) {
+    return NextResponse.json(
+      { ok: false, message: "トークンが必要です" },
+      { status: 401 }
+    );
+  }
+  if (authorization !== process.env.SCPAY_SECRET_KEY) {
+    return NextResponse.json(
+      { ok: false, message: "無効なトークンです" },
+      { status: 403 }
+    );
+  }
   const supabase = createClient();
 
   try {
@@ -72,7 +112,7 @@ export async function DELETE(request: Request) {
 
     if (!req.imageUrl) {
       return NextResponse.json(
-        { message: "画像URLが指定されていません。" },
+        { ok: false, message: "画像URLが指定されていません" },
         { status: 400 }
       );
     }
@@ -82,14 +122,13 @@ export async function DELETE(request: Request) {
       "https://mtthwkpbwxbzwwwwfefl.supabase.co/storage/v1/object/public/profile-pictures/avatar.png"
     ) {
       return NextResponse.json(
-        { message: "デフォルトアイコンは削除出来ません。" },
+        { ok: false, message: "デフォルトアイコンは削除出来ません" },
         { status: 400 }
       );
     }
 
     // Supabaseから画像を削除
     const fileName = req.imageUrl.split("/").pop();
-    console.log(fileName);
     if (fileName) {
       const { error } = await supabase.storage
         .from("profile-pictures")
@@ -97,7 +136,12 @@ export async function DELETE(request: Request) {
 
       if (error) {
         return NextResponse.json(
-          { error: "画像の削除に失敗しました。" },
+          {
+            ok: false,
+            message: "画像の削除に失敗しました",
+            error: error,
+            error_massage: error.message,
+          },
           { status: 500 }
         );
       }
@@ -115,21 +159,29 @@ export async function DELETE(request: Request) {
 
       if (updateError) {
         return NextResponse.json(
-          { error: "ユーザー情報の更新に失敗しました。" },
+          { ok: false, message: "ユーザー情報の更新に失敗しました" },
           { status: 500 }
         );
       }
 
       return NextResponse.json(
-        { message: "画像が削除されました。" },
+        { ok: true, message: "画像が削除されました" },
         { status: 200 }
       );
     }
 
-    return NextResponse.json({ error: "不正な画像URLです。" }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, message: "不正な画像URLです" },
+      { status: 400 }
+    );
   } catch (error) {
     return NextResponse.json(
-      { error: "サーバーエラーが発生しました。" },
+      {
+        ok: false,
+        message: "サーバーエラーが発生しました",
+        error: error,
+        error_massage: error,
+      },
       { status: 500 }
     );
   }

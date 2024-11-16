@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "./githubMarkdown.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,8 @@ import { ThemeProvider } from "@/components/provider/theme";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/nav/header";
 import Footer from "@/components/nav/footer";
+import { TopNewsContent } from "@/components/nav/news";
+import { Toaster } from "react-hot-toast";
 
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getLocale();
@@ -125,6 +128,7 @@ export default async function LocaleLayout({
               <main className="w-full h-full min-h-[calc(100dvh-64px)]">
                 {children}
               </main>
+              <Toaster position="bottom-right" reverseOrder={false}/>
             </TooltipProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

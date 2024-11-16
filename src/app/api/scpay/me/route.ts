@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import { createClient } from "@/utils/supabase/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
   if (!token) {
     return NextResponse.json(
-      { message: "トークンが必要です" },
+      { ok: false, message: "トークンが必要です" },
       { status: 401 }
     );
   }
@@ -32,15 +32,37 @@ export async function GET(req: NextRequest) {
 
     if (error || !user) {
       return NextResponse.json(
-        { message: "ユーザーが見つかりません" },
+        {
+          ok: false,
+          message: "ユーザーが見つかりません",
+          error: error,
+          error_massage: error?.message,
+        },
         { status: 400 }
       );
     }
 
-    return NextResponse.json({ user }, { status: 200 });
+    return NextResponse.json({ ok: true, data: user }, { status: 200 });
   } catch (err) {
+    if (err instanceof TokenExpiredError) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "トークンの有効期限が切れています",
+          error: err,
+          error_massage: err.message,
+        },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(
-      { message: "無効なトークンです" },
+      {
+        ok: false,
+        message: "無効なトークンです",
+        error: err,
+        error_massage: err,
+      },
       { status: 403 }
     );
   }

@@ -1,27 +1,23 @@
-"use client";
-
-import React from "react";
-import { useUser } from "@/hooks/useUser";
-import { LoaderRound } from "@/components/ui/loading";
+import React, { Suspense } from "react";
 import LinkScratch from "./linkScratch";
-import DataList from "./datalist";
+import { Skeleton } from "@nextui-org/react";
 import SettingAvatar from "./avatar";
 
-function AccountPage() {
-  const { user, loading } = useUser();
-
-  if (loading) {
-    return <LoaderRound />;
-  }
-
+async function AccountPage() {
   return (
-    <div className="flex flex-col w-full p-5">
-      <section>
-        <SettingAvatar scpay_user={user} />
-        {/* <hr className="w-full my-5" />
-        <DataList scpay_user={user} /> */}
+    <div className="flex flex-col">
+      <section className="flex flex-col justify-start items-start">
+        <Suspense
+          fallback={<Skeleton className="w-full h-full min-h-32 rounded-lg" />}
+        >
+          <SettingAvatar />
+        </Suspense>
         <hr className="w-full my-5" />
-        <LinkScratch scpay_user={user} />
+        <Suspense
+          fallback={<Skeleton className="w-full h-full min-h-32 rounded-lg" />}
+        >
+          <LinkScratch />
+        </Suspense>
       </section>
     </div>
   );

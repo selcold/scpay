@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/client";
 
 export async function POST(req: NextRequest) {
+  const header = await req.headers;
+  const authorization = header.get("authorization")?.split(" ")[1];
+
+  if (!authorization) {
+    return NextResponse.json(
+      { ok: false, message: "トークンが必要です" },
+      { status: 401 }
+    );
+  }
+  if (authorization !== process.env.SCPAY_SECRET_KEY) {
+    return NextResponse.json(
+      { ok: false, message: "無効なトークンです" },
+      { status: 403 }
+    );
+  }
   const { userId, item, data } = await req.json();
 
   const supabase = createClient();
@@ -11,6 +26,7 @@ export async function POST(req: NextRequest) {
     if (!userId || !item) {
       return NextResponse.json(
         {
+          ok: false,
           message: "ユーザーID、項目、およびデータが必要です",
         },
         { status: 400 }
@@ -26,22 +42,26 @@ export async function POST(req: NextRequest) {
     if (error) {
       return NextResponse.json(
         {
+          ok: false,
           message: "データの設定中にエラーが発生しました",
-          error: error.message,
+          error: error,
+          error_massage: error.message,
         },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
-      { message: "データの設定が成功しました" },
+      { ok: true, message: "データの設定が成功しました" },
       { status: 201 }
     );
   } catch (error) {
     return NextResponse.json(
       {
+        ok: false,
         message: "サーバーエラーが発生しました",
-        error: (error as Error).message,
+        error: error as Error,
+        error_message: (error as Error).message,
       },
       { status: 500 }
     );
