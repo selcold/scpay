@@ -28,8 +28,9 @@ export const ScPayAdminProviderContent = ({
     return LoadingComponent ? <LoadingComponent /> : <></>;
   }
 
-  if (!loading && !user?.admin) {
+  if (!user?.admin) {
     if (NoAdminComponent) return <>{NoAdminComponent}</>;
+    return null;
   }
 
   if (error) {
@@ -41,10 +42,6 @@ export const ScPayAdminProviderContent = ({
         エラーが発生しました
       </div>
     );
-  }
-
-  if (!user) {
-    return null;
   }
 
   return (

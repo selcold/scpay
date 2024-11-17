@@ -49,7 +49,7 @@ export function NewsContentAll() {
       if (res.ok && res.data) {
         setTotal(res.data);
       } else {
-        setError(res?.message);
+        setError(res.message);
       }
       setIsLoading(false);
     };
@@ -69,6 +69,7 @@ export function NewsContentAll() {
       if (res.ok && res.data) {
         setNews(res.data);
       } else {
+        console.error(res.error, res.error_message);
         setError(res?.message);
       }
       setIsLoading(false);
@@ -79,6 +80,20 @@ export function NewsContentAll() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+  function NewsSkeleton() {
+    return (
+      <>
+        <Skeleton className="w-full h-16 rounded-lg" />
+        <Skeleton className="w-full h-16 rounded-lg" />
+        <Skeleton className="w-full h-16 rounded-lg" />
+        <Skeleton className="w-full h-16 rounded-lg" />
+        <Skeleton className="w-full h-16 rounded-lg" />
+        <Skeleton className="w-full h-16 rounded-lg" />
+        <Skeleton className="w-full h-16 rounded-lg" />
+      </>
+    );
+  }
 
   function NewsPagination() {
     const PageTotal =
@@ -93,6 +108,7 @@ export function NewsContentAll() {
           showControls
           showShadow
           total={PageTotal}
+          page={currentPage}
           initialPage={1}
           siblings={0}
           onChange={handlePageChange}
@@ -105,6 +121,7 @@ export function NewsContentAll() {
           showControls
           showShadow
           total={PageTotal}
+          page={currentPage}
           initialPage={1}
           siblings={1}
           onChange={handlePageChange}
@@ -117,6 +134,7 @@ export function NewsContentAll() {
           showControls
           showShadow
           total={PageTotal}
+          page={currentPage}
           initialPage={1}
           siblings={2}
           onChange={handlePageChange}
@@ -129,6 +147,7 @@ export function NewsContentAll() {
           showControls
           showShadow
           total={PageTotal}
+          page={currentPage}
           initialPage={1}
           siblings={3}
           onChange={handlePageChange}
@@ -138,6 +157,22 @@ export function NewsContentAll() {
   }
 
   function NewsContent() {
+    if (isLoading) {
+      return <NewsSkeleton />;
+    } else {
+      if (!news) {
+        return (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>データ取得</AlertTitle>
+            <AlertDescription>
+              ニュースが存在しないまたは取得できませんでした。
+            </AlertDescription>
+          </Alert>
+        );
+      }
+    }
+
     if (error) {
       return (
         <Alert variant="destructive">
@@ -145,19 +180,6 @@ export function NewsContentAll() {
           <AlertTitle>エラー</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-      );
-    }
-    if (isLoading) {
-      return (
-        <>
-          <Skeleton className="w-full h-16 rounded-lg" />
-          <Skeleton className="w-full h-16 rounded-lg" />
-          <Skeleton className="w-full h-16 rounded-lg" />
-          <Skeleton className="w-full h-16 rounded-lg" />
-          <Skeleton className="w-full h-16 rounded-lg" />
-          <Skeleton className="w-full h-16 rounded-lg" />
-          <Skeleton className="w-full h-16 rounded-lg" />
-        </>
       );
     }
 
@@ -195,7 +217,7 @@ export function NewsContentAll() {
     }
 
     return (
-      <Alert variant="destructive">
+      <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>データ取得</AlertTitle>
         <AlertDescription>
@@ -206,19 +228,21 @@ export function NewsContentAll() {
   }
 
   return (
-    <div className="flex flex-col justify-center  items-center gap-2 w-full p-1 sm:!p-3 md:!p-5">
+    <div className="flex flex-col justify-center items-center gap-2 w-full h-full">
       {error ? (
         <div className="flex">{error}</div>
       ) : (
-        <section
-          id="news"
-          className="flex flex-col justify-center items-stretch gap-3 w-full max-w-2xl"
-        >
-          <NewsContent />
+        <div className="flex flex-col justify-start items-center gap-3 w-full h-full">
+          <section
+            id="news"
+            className="flex flex-col justify-center items-stretch gap-3 w-full max-w-2xl"
+          >
+            <NewsContent />
+          </section>
           <div className="flex flex-col justify-center items-center w-full">
-            <NewsPagination />
+            {news.length > 0 && <NewsPagination />}
           </div>
-        </section>
+        </div>
       )}
     </div>
   );

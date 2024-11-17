@@ -40,7 +40,9 @@ export interface ScPayUserType {
   deleted_at: Date | null;
   scratch: string | null;
   status: string; // default active
-  profile: Record<string, any> | null;
+  profile: {
+    image: string;
+  };
   history: Record<string, any> | null;
   connection: Record<string, any> | null;
   achievements: Record<string, any> | null;

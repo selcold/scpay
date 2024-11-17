@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
 
   try {
     // 指定された項目に基づいてデータを更新
-    const { data, error } = await supabase
+    const { count, error } = await supabase
       .from("news")
-      .select("*", { count: "exact" });
+      .select("*", { count: "exact", head: true });
 
     if (error) {
       return NextResponse.json(
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { ok: true, message: "データの取得が成功しました", data: data },
+      { ok: true, message: "データの取得が成功しました", data: count },
       { status: 201 }
     );
   } catch (error) {

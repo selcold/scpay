@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { reqScPayAPI } from "@/utils/supabase/scpay/req";
 import toast from "react-hot-toast";
+import { ScPayAdminProviderContent } from "@/components/admin/block";
 
 export function NewsCreateButton() {
   const [formLoading, setFormLoading] = useState(false);
@@ -60,63 +61,65 @@ export function NewsCreateButton() {
   };
 
   return (
-    <div>
-      <Button onPress={onOpen}>新規ニュースを作成</Button>
-      <Modal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        backdrop="blur"
-        scrollBehavior="inside"
-      >
-        <ModalContent>
-          {(onClose) => (
-            <form onSubmit={handleSubmit((data) => onSubmit(data, onClose))}>
-              <ModalHeader className="flex flex-col gap-1">
-                新規ニュースを作成
-              </ModalHeader>
-              <ModalBody>
-                <Input
-                  {...register("title")}
-                  label="Title"
-                  placeholder="ニュースを作成"
-                  variant="bordered"
-                  color={errors.title ? "danger" : "success"}
-                  isInvalid={errors.title ? true : false}
-                  errorMessage={errors.title?.message as string | undefined}
-                />
-                <Textarea
-                  {...register("description")}
-                  label="Description"
-                  placeholder="新規ニュースを作成しました。"
-                  disableAnimation
-                  disableAutosize
-                  variant="bordered"
-                  color={errors.description ? "danger" : "success"}
-                  isInvalid={errors.description ? true : false}
-                  errorMessage={
-                    errors.description?.message as string | undefined
-                  }
-                  classNames={{
-                    base: "w-full",
-                    input: "resize-y min-h-[40px]",
-                  }}
-                />
-                {error && (
-                  <div className="text-red-500 text-sm mt-2">{error}</div>
-                )}
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  閉じる
-                </Button>
-                <Button color="primary" type="submit" isLoading={formLoading}>
-                  作成
-                </Button>
-              </ModalFooter>
-            </form>
-          )}
-        </ModalContent>
-      </Modal>
-    </div>
+    <ScPayAdminProviderContent>
+      <div className="flex justify-center items-center">
+        <Button onPress={onOpen}>新規ニュースを作成</Button>
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          backdrop="blur"
+          scrollBehavior="inside"
+        >
+          <ModalContent>
+            {(onClose) => (
+              <form onSubmit={handleSubmit((data) => onSubmit(data, onClose))}>
+                <ModalHeader className="flex flex-col gap-1">
+                  新規ニュースを作成
+                </ModalHeader>
+                <ModalBody>
+                  <Input
+                    {...register("title")}
+                    label="Title"
+                    placeholder="ニュースを作成"
+                    variant="bordered"
+                    color={errors.title ? "danger" : "success"}
+                    isInvalid={errors.title ? true : false}
+                    errorMessage={errors.title?.message as string | undefined}
+                  />
+                  <Textarea
+                    {...register("description")}
+                    label="Description"
+                    placeholder="新規ニュースを作成しました。"
+                    disableAnimation
+                    disableAutosize
+                    variant="bordered"
+                    color={errors.description ? "danger" : "success"}
+                    isInvalid={errors.description ? true : false}
+                    errorMessage={
+                      errors.description?.message as string | undefined
+                    }
+                    classNames={{
+                      base: "w-full",
+                      input: "resize-y min-h-[40px]",
+                    }}
+                  />
+                  {error && (
+                    <div className="text-red-500 text-sm mt-2">{error}</div>
+                  )}
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    閉じる
+                  </Button>
+                  <Button color="primary" type="submit" isLoading={formLoading}>
+                    作成
+                  </Button>
+                </ModalFooter>
+              </form>
+            )}
+          </ModalContent>
+        </Modal>
+      </div>
+    </ScPayAdminProviderContent>
   );
 }

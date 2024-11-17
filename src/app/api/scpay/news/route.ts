@@ -35,6 +35,17 @@ export async function GET(req: NextRequest) {
         .single();
 
       if (error) {
+        if (error.code === "PGRST116") {
+          return NextResponse.json(
+            {
+              ok: false,
+              message: "データが存在しません",
+              error: error,
+              error_message: error.message,
+            },
+            { status: 500 }
+          );
+        }
         return NextResponse.json(
           {
             ok: false,
@@ -59,6 +70,18 @@ export async function GET(req: NextRequest) {
         .range(offset, offset + limit - 1); // 指定した範囲のデータを取得
 
       if (error) {
+        console.log(error);
+        if (error.code === "PGRST116") {
+          return NextResponse.json(
+            {
+              ok: false,
+              message: "データが存在しません",
+              error: error,
+              error_message: error.message,
+            },
+            { status: 500 }
+          );
+        }
         return NextResponse.json(
           {
             ok: false,

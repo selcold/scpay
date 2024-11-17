@@ -151,7 +151,7 @@ export const ScPayAdminProvider = ({
     );
   }
 
-  if (!user) {
+  if (!user?.admin) {
     return null;
   }
 

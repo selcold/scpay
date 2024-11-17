@@ -19,7 +19,7 @@ function TopNewsContents() {
   useEffect(() => {
     const getAPI = async () => {
       setIsLoading(true);
-      setError(undefined)
+      setError(undefined);
       const res = await reqScPayAPI({
         url: "/api/scpay/news?limit=5",
         method: "GET",
@@ -27,8 +27,8 @@ function TopNewsContents() {
       if (res.ok && res.data) {
         setTopnews(res.data);
       } else {
-        toast.error(res.error_message || "ニュースの取得に失敗しました");
-        setError(res.error_message || "ニュースの取得に失敗しました");
+        toast.error(res.message || "ニュースの取得に失敗しました");
+        setError(res.message || "ニュースの取得に失敗しました");
       }
       setIsLoading(false);
     };
@@ -51,16 +51,6 @@ function TopNewsContents() {
   }
 
   function NewsContents() {
-    if (error) {
-      return (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>エラー</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      );
-    }
-
     if (isLoading) {
       return (
         <div className="flex flex-col justify-center items-center gap-2 w-full max-w-xl bg-neutral-900 rounded-lg p-5">
@@ -71,6 +61,15 @@ function TopNewsContents() {
       );
     }
 
+    if (error) {
+      return (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>エラー</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      );
+    }
     if (topnews.length > 0) {
       return (
         <div className="flex flex-col justify-center items-center gap-2 w-full bg-neutral-50 dark:bg-neutral-950 rounded-lg p-2 border border-neutral-100 dark:border-neutral-900 shadow">
@@ -111,7 +110,6 @@ function TopNewsContents() {
   return (
     <div className="flex flex-col justify-center items-center gap-4 container max-w-xl p-5">
       <NewsContents />
-      <NewsCreateButton />
     </div>
   );
 }

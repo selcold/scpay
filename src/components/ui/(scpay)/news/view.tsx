@@ -84,8 +84,8 @@ function NewsContentView({ id }: { id: string }) {
         setNews(res.data);
         setNewsPreview(res.data);
       } else {
-        toast.error(res.error_message || "ニュースの取得に失敗しました");
-        setError(res.error_message || "ニュースの取得に失敗しました");
+        toast.error(res.message || "ニュースの取得に失敗しました");
+        setError(res.message || "ニュースの取得に失敗しました");
       }
       setIsLoading(false);
     };
@@ -93,6 +93,10 @@ function NewsContentView({ id }: { id: string }) {
   }, []);
 
   function NewsContentNow() {
+    if (isLoading) {
+      return <NewsCardSkeleton />;
+    }
+
     if (error) {
       return (
         <Alert variant="destructive">
@@ -101,10 +105,6 @@ function NewsContentView({ id }: { id: string }) {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       );
-    }
-
-    if (isLoading) {
-      return <NewsCardSkeleton />;
     }
 
     if (news) {

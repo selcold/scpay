@@ -10,7 +10,6 @@ import {
   useUser,
 } from "@scratch-auth/nextjs";
 import { eventDispatch } from "@scratch-auth/nextjs/src/cookie/dispatchEvent";
-import { ScPayAccountSET } from "@/components/scpay/set";
 import { Button } from "@nextui-org/react";
 import { setCookie } from "cookies-next/client";
 import { ScPayUserType } from "@/utils/supabase/scpay";
@@ -51,7 +50,9 @@ function LinkScratch() {
       if (res.ok) {
         setLocalUser({ ...localUser, scratch: link });
         console.log(link ? "連携成功" : "連携解除成功", res.message);
-        toast.success(link ? "アカウント連携に成功しました" : "アカウント連携を解除しました");
+        toast.success(
+          link ? "アカウント連携に成功しました" : "アカウント連携を解除しました"
+        );
       } else {
         console.error("処理失敗", res.message, res.error_message);
         toast.error(

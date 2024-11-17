@@ -3,7 +3,7 @@
 import React from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
-import { Link as NextuiLink } from "@nextui-org/react";
+import { LinkProps, Link as NextuiLink } from "@nextui-org/react";
 
 // Turl関数はロケールを含むURLを生成します
 export function Turl(url: string) {
@@ -22,8 +22,6 @@ interface TLinkProps {
   onClick?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
   isNextuiLink?: boolean;
 }
-
-// TLinkコンポーネントは国際化対応のリンクを生成します
 const TLink = React.forwardRef<HTMLAnchorElement, TLinkProps>(
   (
     {
@@ -76,7 +74,53 @@ const TLink = React.forwardRef<HTMLAnchorElement, TLinkProps>(
     );
   }
 );
-
 TLink.displayName = "TLink";
 
-export { TLink };
+interface TNextuiLinkProps extends LinkProps {
+  children: React.ReactNode;
+  className?: string;
+  href?: string;
+  target?: string;
+  i18n_text?: boolean;
+  i18n_path?: string;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+}
+const TNextuiLink = React.forwardRef<HTMLAnchorElement, TNextuiLinkProps>(
+  (
+    {
+      children,
+      className,
+      href,
+      target,
+      i18n_text = false,
+      i18n_path = "",
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
+    const t = useTranslations();
+
+    const hrefUrl = href || "";
+    const setTarget = target || "_self";
+
+    return (
+      <NextuiLink
+        href={hrefUrl}
+        target={setTarget}
+        onClick={onClick}
+        className={className}
+        aria-label="link"
+        ref={ref}
+        {...props}
+      >
+        {i18n_text
+          ? t(`${i18n_path}${i18n_path ? "." : ""}${children}`)
+          : children}
+      </NextuiLink>
+    );
+  }
+);
+TNextuiLink.displayName = "TNextuiLink";
+
+export { TLink, TNextuiLink };
