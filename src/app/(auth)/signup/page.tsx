@@ -56,7 +56,7 @@ function SignUpPage() {
     username: z
       .string()
       .min(3, "3文字以上で入力してください")
-      .max(15, "15文字以内で入力してください"),
+      .max(30, "30文字以内で入力してください"),
     email: z.string().email("有効なメールアドレスを入力してください"),
     password: z
       .string()

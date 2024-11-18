@@ -62,7 +62,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Suspense>
             </div>
           </header>
-          <main className="flex flex-col container p-4 pt-0">{children}</main>
+          <main className="container flex flex-col items-start px-8 ml-0 mr-auto">{children}</main>
         </SidebarInset>
       </SidebarProvider>
     </ScPayUserProvider>

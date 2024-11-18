@@ -16,6 +16,13 @@ import { ScPayUserType } from "@/utils/supabase/scpay";
 import ScPayUser from "./scpayUser";
 import { reqScPayAPI } from "@/utils/supabase/scpay/req";
 import toast from "react-hot-toast";
+import {
+  CustomCard,
+  CustomCardBody,
+  CustomCardDescription,
+  CustomCardHeader,
+  CustomCardTitle,
+} from "./customCard";
 
 function LinkScratch() {
   const { scpayUser, scpayUser_loading } = ScPayUser();
@@ -138,19 +145,15 @@ function LinkScratch() {
   }, [localUser, user, scpayUser, scpayUser_loading, loading, userLoading]); // 必要な依存関係を追加
 
   return (
-    <div className="flex flex-col sm:!flex-row justify-between items-start w-full">
-      <div className="flex flex-col mb-5 w-full sm:!w-1/2">
-        <h1 className="font-bold text-xl md:!text-2xl">
-          Scratchアカウントを紐付ける
-        </h1>
-        <p className="text-sm">
+    <CustomCard>
+      <CustomCardHeader>
+        <CustomCardTitle>Scratchアカウントを紐付ける</CustomCardTitle>
+        <CustomCardDescription>
           ScPayアカウントとScratchアカウントを紐付ける。この機能を利用するとプロフィール情報やゲームの進捗状況や通貨を統合することが可能になります。
-        </p>
-      </div>
-      <div className="flex flex-wrap justify-end items-center gap-3 w-full sm:!w-1/2">
-        {button}
-      </div>
-    </div>
+        </CustomCardDescription>
+      </CustomCardHeader>
+      <CustomCardBody className="gap-2">{button}</CustomCardBody>
+    </CustomCard>
   );
 }
 

@@ -71,7 +71,7 @@ export function NewsEditContent({
         if (response.ok) {
           console.log("ニュースを削除しました");
           toast.success(response.message || "ニュースを削除しました");
-          router.push("/");
+          router.push("/news");
         } else {
           console.warn("作成エラー:", response.message, response.error);
           setError(response.message || "ニュースの削除に失敗しました");

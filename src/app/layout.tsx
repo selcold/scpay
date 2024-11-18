@@ -128,7 +128,14 @@ export default async function LocaleLayout({
               <main className="w-full h-full min-h-[calc(100dvh-64px)]">
                 {children}
               </main>
-              <Toaster position="bottom-right" reverseOrder={false}/>
+              <Toaster
+                position="bottom-right"
+                reverseOrder={false}
+                toastOptions={{
+                  className:
+                    "border bg-neutral-50 dark:bg-neutral-950 text-black dark:text-white",
+                }}
+              />
             </TooltipProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

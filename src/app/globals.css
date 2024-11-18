@@ -84,6 +84,10 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 *:focus:not(:focus-visible) {
   outline: none !important;
 }

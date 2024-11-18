@@ -1,15 +1,53 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { useTheme } from "next-themes";
 
 function HeroTopImage() {
+  const theme = useTheme();
   const domain = "scpay.com";
+  const [ImageContent, setImageContent] = useState<React.ReactNode | null>(
+    null
+  );
+
+  function ThemeContent(Qtheme: string) {
+    if (Qtheme === "dark") {
+      setImageContent(
+        <image
+          id="image0_3051_12573"
+          height={2500}
+          width={3978}
+          xlinkHref="/image/upload/dashboard-dark.png"
+          className="rounded-lg"
+        />
+      );
+    } else {
+      setImageContent(
+        <image
+          id="image0_3051_12573"
+          height={2500}
+          width={3978}
+          xlinkHref="/image/upload/dashboard-light.png"
+          className="rounded-lg"
+        />
+      );
+    }
+  }
+
+  useEffect(() => {
+    if (theme.theme === "system") {
+      ThemeContent(theme.systemTheme || "light");
+    } else {
+      ThemeContent(theme.theme || "light");
+    }
+  }, [theme]);
+
   return (
     <motion.div
       className="absolute top-[40%] w-full"
-      initial={{ opacity: 0, y: 100 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 100, filter: "blur(10px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{
         duration: 0.8,
         delay: 0.2,
@@ -28,11 +66,11 @@ function HeroTopImage() {
         <g filter="url(#filter0_dddddd_3051_12573)">
           <g clipPath="url(#clip0_3051_12573)">
             <rect
-              fill="url(#paint0_linear_3051_12573)"
               height={616}
               rx={12}
               transform="matrix(0.965926 -0.258819 0.707107 0.707107 59 344.583)"
               width={1115}
+              className=" fill-foreground/70 dark:fill-background"
             />
             <g clipPath="url(#clip1_3051_12573)">
               <rect
@@ -139,10 +177,10 @@ function HeroTopImage() {
               </g>
             </g>
             <rect
-              fill="black"
               height={906}
               transform="matrix(0.965926 -0.258819 0.707107 0.707107 95.7695 381.353)"
               width={1115}
+              className=" fill-background"
             />
             <g filter="url(#filter1_ddd_3051_12573)">
               <g clipPath="url(#clip11_3051_12573)">
@@ -156,7 +194,6 @@ function HeroTopImage() {
             </g>
           </g>
           <rect
-            fill="url(#gradient)"
             height={615}
             rx="11.5"
             stroke="white"
@@ -165,10 +202,25 @@ function HeroTopImage() {
             width={1114}
             x="0.836516"
             y="0.224144"
+            className=" fill-[url(#gradient)] dark:fill-[url(#gradient-dark)]"
           />
         </g>
-        <defs>
+        <defs suppressHydrationWarning>
           <linearGradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+            <stop
+              offset="0%"
+              style={{ stopColor: "rgba(0, 0, 0, 0)", stopOpacity: 1 }}
+            />
+            <stop
+              offset="50%"
+              style={{ stopColor: "rgba(255, 255, 255, 0.35)", stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: "white", stopOpacity: 1 }}
+            />
+          </linearGradient>
+          <linearGradient id="gradient-dark" x1="0%" x2="0%" y1="0%" y2="100%">
             <stop
               offset="0%"
               style={{ stopColor: "rgba(0, 0, 0, 0)", stopOpacity: 1 }}
@@ -179,7 +231,7 @@ function HeroTopImage() {
             />
             <stop
               offset="100%"
-              style={{ stopColor: "rgb(0, 0, 0)", stopOpacity: 1 }}
+              style={{ stopColor: "black", stopOpacity: 1 }}
             />
           </linearGradient>
           <filter
@@ -493,13 +545,7 @@ function HeroTopImage() {
               width={1099}
             />
           </clipPath>
-          <image
-            height={2500}
-            id="image0_3051_12573"
-            width={3978}
-            xlinkHref="/image/upload/スクリーンショット 2024-11-16 18.35.20.png"
-            className="rounded-lg"
-          />
+          {ImageContent}
         </defs>
       </svg>
     </motion.div>

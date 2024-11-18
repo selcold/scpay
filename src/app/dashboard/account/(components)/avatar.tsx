@@ -2,11 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Skeleton } from "@nextui-org/react";
 import { ScPayUserType } from "@/utils/supabase/scpay";
 import ScPayUser from "./scpayUser";
 import toast from "react-hot-toast";
 import { reqScPayAPI } from "@/utils/supabase/scpay/req";
+import { CustomCard, CustomCardBody, CustomCardDescription, CustomCardHeader, CustomCardTitle } from "./customCard";
 
 function SettingAvatar() {
   const { scpayUser, scpayUser_loading } = ScPayUser();
@@ -102,7 +103,7 @@ function SettingAvatar() {
       });
       if (res.ok) {
         toast.success("アバターを削除しました");
-        setLocalUser((prevUser) => {
+        setLocalUser((prevUser: any) => {
           if (!prevUser) return prevUser;
           return {
             ...prevUser,
@@ -121,24 +122,28 @@ function SettingAvatar() {
   };
 
   return (
-    <div className="flex flex-col justify-start items-start w-full">
-      <div className="flex flex-col mb-5 w-full">
-        <h1 className="font-bold text-xl md:!text-2xl">アイコン設定</h1>
-        <p className="text-sm">
+    <CustomCard>
+      <CustomCardHeader>
+        <CustomCardTitle>アイコン設定</CustomCardTitle>
+        <CustomCardDescription>
           アップロード後反映に時間がかかることがあります
-        </p>
-      </div>
-      <div className="flex flex-col sm:!flex-row justify-between items-start w-full">
+        </CustomCardDescription>
+      </CustomCardHeader>
+      <CustomCardBody className="flex flex-col sm:!flex-row justify-between items-start w-full">
         <div className="flex flex-col mb-5 w-full sm:!w-1/2">
           <label
             htmlFor="user-avatar"
             className="relative w-24 h-24 rounded-full group cursor-pointer"
           >
-            <Avatar
-              className="w-24 h-24 border border-neutral-300 dark:border-neutral-800 shadow"
-              alt="Profile Preview"
-              src={imagePreview || "/wp-content/avatar/guest90x90.png"}
-            />
+            {scpayUser ? (
+              <Avatar
+                className="w-24 h-24 border border-neutral-300 dark:border-neutral-800 shadow"
+                alt="Profile Preview"
+                src={imagePreview || "/wp-content/avatar/guest90x90.png"}
+              />
+            ) : (
+              <Skeleton className="w-24 h-24 rounded-full" />
+            )}
             <div className="absolute inset-0 rounded-full bg-neutral-500/80 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 flex items-center justify-center">
               <span className="text-white">変更</span>
             </div>
@@ -151,7 +156,7 @@ function SettingAvatar() {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
           </label>
-          {imageError && <p className="text-red-500">{imageError}</p>}
+          {imageError && <p className="text-red-500 mt-3">{imageError}</p>}
         </div>
         <div className="flex flex-col justify-end items-stretch gap-3 w-fit max-w-full sm:!max-w-1/2 ml-auto">
           <Button
@@ -171,8 +176,8 @@ function SettingAvatar() {
             アイコンを削除
           </Button>
         </div>
-      </div>
-    </div>
+      </CustomCardBody>
+    </CustomCard>
   );
 }
 

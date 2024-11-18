@@ -48,8 +48,42 @@ function Header() {
     );
   }
 
+  function NavCustomContent() {
+    return (
+      <>
+        <ScPayUserButton
+          responsiveClassName="hidden sm:!flex"
+          LoginButton={
+            <Button
+              className="hidden sm:!flex"
+              color="primary"
+              radius="full"
+              variant="light"
+              size="md"
+            >
+              ログイン
+            </Button>
+          }
+        />
+        <Link href="/dashboard">
+          <Button
+            className="hidden sm:!flex"
+            color="primary"
+            radius="full"
+            size="md"
+          >
+            ダッシュボード
+          </Button>
+        </Link>
+      </>
+    );
+  }
+
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen}>
+    <Navbar
+      onMenuOpenChange={setIsMenuOpen}
+      className={`${isMenuOpen && "fixed inset-0 !h-[var(--navbar-height)]"}`}
+    >
       <NavbarContent
         className="flex justify-start items-center gap-4 h-full sm:!mr-5"
         justify="start"
@@ -72,47 +106,27 @@ function Header() {
         ))}
       </NavbarContent>
       <NavbarContent justify="end">
+        <NavCustomContent />
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           className="sm:!hidden"
         />
-        <ScPayUserButton
-          props={{
-            responsiveClassName: "hidden sm:!block",
-            LoginButton: (
+      </NavbarContent>
+      <NavbarMenu className="overflow-y-auto">
+        <NavbarMenuItem className="flex flex-col gap-2 mb-2">
+          <ScPayUserButton
+            yesLoginContentNull
+            LoginButton={
               <Button
-                className="hidden sm:!flex"
                 color="primary"
-                radius="full"
-                variant="light"
+                radius="lg"
+                variant="faded"
                 size="md"
+                className="w-full"
               >
                 ログイン
               </Button>
-            ),
-          }}
-        />
-        <Link href="/dashboard">
-          <Button
-            className="hidden sm:!flex"
-            color="primary"
-            radius="full"
-            size="md"
-          >
-            ダッシュボード
-          </Button>
-        </Link>
-      </NavbarContent>
-      <NavbarMenu>
-        <NavbarMenuItem className="flex flex-col gap-2 mb-2">
-          <ScPayUserButton
-            props={{
-              LoginButton: (
-                <Button color="primary" radius="lg" variant="faded" size="md">
-                  ログイン
-                </Button>
-              ),
-            }}
+            }
           />
           <Link href="/dashboard" className="w-full">
             <Button color="primary" radius="lg" size="md" className="w-full">
@@ -133,9 +147,18 @@ function Header() {
             </TNextuiLink>
           </NavbarMenuItem>
         ))}
-        <NavbarMenuItem className="flex mt-auto pb-5">
-          <ModeToggle />
-          <LanguageSelest />
+        <NavbarMenuItem className="flex flex-wrap justify-between items-center gap-2 mt-auto pb-5">
+          <div className="flex gap-1">
+            <LanguageSelest />
+          </div>
+          <ScPayUserButton
+            noLoginContentNull
+            LoginButton={
+              <Button color="primary" radius="lg" variant="faded" size="md">
+                ログイン
+              </Button>
+            }
+          />
         </NavbarMenuItem>
       </NavbarMenu>
     </Navbar>

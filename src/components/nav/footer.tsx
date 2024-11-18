@@ -7,6 +7,7 @@ import { FaGithub, FaTwitter } from "react-icons/fa";
 import LanguageSelest from "../ui/LanguageSelest";
 import { TLink } from "../ui/Tcomps";
 import { useTranslations } from "next-intl";
+import { ModeToggle } from "../ui/ModeToggle";
 
 function Footer() {
   const t = useTranslations("Footer");
@@ -73,19 +74,25 @@ function Footer() {
       <div className="max-w-full w-[calc(1200px+calc(2*24px))] mx-auto px-6">
         <div className="min-h-[400px] py-9">
           <div className="grid gap-8 grid-cols-[repeat(auto-fill,minmax(140px,1fr))] lg:!flex flex-wrap justify-between">
-            <div className="flex flex-row justify-between items-center lg:!items-stretch col-span-full">
-              {config.themeConfig.footer?.logo?.href ? (
-                <Link
-                  href={config.themeConfig.footer?.logo?.href}
-                  aria-label="Logo"
-                >
+            <div className="flex flex-col justify-start items-center lg:!items-stretch col-span-full">
+              <div className="flex justify-between items-center w-full mb-3">
+                {config.themeConfig.footer?.logo?.href ? (
+                  <Link
+                    href={config.themeConfig.footer?.logo?.href}
+                    aria-label="Logo"
+                  >
+                    <Logo />
+                  </Link>
+                ) : (
                   <Logo />
-                </Link>
-              ) : (
-                <Logo />
-              )}
-              <div className="lg:!hidden flex flex-row justify-start items-center gap-3">
-                <SocialButtons />
+                )}
+                <div className="lg:!hidden flex flex-row justify-start items-center gap-3">
+                  <SocialButtons />
+                </div>
+              </div>
+              <div className="flex flex-row justify-start items-center gap-3 w-full mt-5">
+                <LanguageSelest />
+                <ModeToggle className="!w-10 !h-10" />
               </div>
             </div>
 
@@ -121,7 +128,6 @@ function Footer() {
                 <SocialButtons />
               </div>
             </div>
-            <LanguageSelest />
           </div>
         </div>
       </div>

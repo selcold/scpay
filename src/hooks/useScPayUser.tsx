@@ -25,7 +25,6 @@ export const useScPayUser = (): UseUserResult => {
     const fetchUser = async () => {
       const token = getCookie("scpay-account-token"); // クッキーからトークンを取得
       if (!token) {
-        setError("認証情報が見つかりません");
         setUser(null);
         setLoading(false);
         return;

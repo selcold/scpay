@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimation } from "motion/react";
 
 function LoaderRo13({ time }: { time?: number }) {
   const [loading, setLoading] = useState(true);
