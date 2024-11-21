@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { Globe, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Locale, setUserLocale } from "@/services/locale";
@@ -23,7 +22,7 @@ export interface SelectThemeButtonProps
 const SelectThemeButton = React.forwardRef<
   HTMLButtonElement,
   SelectThemeButtonProps
->(({ className, button = "icon", ...props }, ref) => {
+>(({ className, ...props }, ref) => {
   const t = useTranslations("Theme");
   const theme = useTheme();
 
@@ -59,8 +58,8 @@ export interface SelectLanguageButtonProps
 const SelectLanguageButton = React.forwardRef<
   HTMLButtonElement,
   SelectLanguageButtonProps
->(({ className, button = "icon", ...props }, ref) => {
-  const t = useTranslations("Languages");
+>(({ className, ...props }, ref) => {
+  // const t = useTranslations("Languages");
   const lang = useLocale();
 
   const router = useRouter();
@@ -69,6 +68,7 @@ const SelectLanguageButton = React.forwardRef<
   function onChange(value: string) {
     const locale = value as Locale;
     startTransition(() => {
+      console.log(isPending);
       setUserLocale(locale);
       router.refresh();
       window.scrollTo({ top: 0, behavior: "smooth" });

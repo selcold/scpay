@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
 import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
 
 // JWT認証ミドルウェア（API専用）
 export const authMiddleware =
@@ -17,7 +16,7 @@ export const authMiddleware =
       req.user = decoded; // `req.user`にユーザー情報を設定
       return handler(req, res);
     } catch (error) {
-      return res.status(401).json({ message: "認証が無効です" });
+      return res.status(401).json({ message: "認証が無効です", error });
     }
   };
 

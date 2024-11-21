@@ -10,6 +10,8 @@ export function UserInfo({ userId }: { userId: string }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
 
+  console.log(loading,error)
+
   useEffect(() => {
     const getUser = async () => {
       setLoading(true);
@@ -18,7 +20,6 @@ export function UserInfo({ userId }: { userId: string }) {
         url: `/api/scpay/account?userId=${userId}`,
         method: "GET",
       });
-      console.log(res);
       if (res.ok) {
         setUser(res.data);
       } else {

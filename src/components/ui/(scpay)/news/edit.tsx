@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Key, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NewsType } from "@/utils/supabase/scpay";
 import {
   Button,

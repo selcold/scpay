@@ -33,7 +33,7 @@ export function SidebarNavFooter() {
 
 export function SidebarNavUserItem() {
   const router = useRouter();
-  const { user, loading } = useScPayUser();
+  const { user } = useScPayUser();
 
   const handleLogout = () => {
     deleteCookie("scpay-account-token");

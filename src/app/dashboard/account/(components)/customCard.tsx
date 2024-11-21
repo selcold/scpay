@@ -5,7 +5,11 @@ interface CustomCardProps extends HtmlHTMLAttributes<HTMLDivElement> {}
 const CustomCard = React.forwardRef<HTMLDivElement, CustomCardProps>(
   ({ children, className, ...props }, ref) => {
     return (
-      <div ref={ref} className={cn("flex flex-col w-full h-full", className)}>
+      <div
+        ref={ref}
+        className={cn("flex flex-col w-full h-full", className)}
+        {...props}
+      >
         {children}
       </div>
     );
@@ -19,7 +23,7 @@ const CustomCardHeader = React.forwardRef<
   CustomCardHeaderProps
 >(({ children, className, ...props }, ref) => {
   return (
-    <div ref={ref} className={cn("flex flex-col mb-5", className)}>
+    <div ref={ref} className={cn("flex flex-col mb-5", className)} {...props}>
       {children}
     </div>
   );
@@ -32,10 +36,8 @@ const CustomCardBody = React.forwardRef<HTMLDivElement, CustomCardBodyProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          "flex items-center w-full mb-3",
-          className
-        )}
+        className={cn("flex items-center w-full mb-3", className)}
+        {...props}
       >
         {children}
       </div>
@@ -50,7 +52,7 @@ const CustomCardTitle = React.forwardRef<
   CustomCardTitleProps
 >(({ children, className, ...props }, ref) => {
   return (
-    <h1 ref={ref} className={cn("text-xl", className)}>
+    <h1 ref={ref} className={cn("text-xl", className)} {...props}>
       {children}
     </h1>
   );
@@ -64,11 +66,21 @@ const CustomCardDescription = React.forwardRef<
   CustomCardDescriptionProps
 >(({ children, className, ...props }, ref) => {
   return (
-    <p ref={ref} className={cn("text-sm text-foreground-500", className)}>
+    <p
+      ref={ref}
+      className={cn("text-sm text-foreground-500", className)}
+      {...props}
+    >
       {children}
     </p>
   );
 });
 CustomCardDescription.displayName = "CustomCardDescription";
 
-export { CustomCard, CustomCardHeader, CustomCardBody, CustomCardTitle, CustomCardDescription };
+export {
+  CustomCard,
+  CustomCardHeader,
+  CustomCardBody,
+  CustomCardTitle,
+  CustomCardDescription,
+};

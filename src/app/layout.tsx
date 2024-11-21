@@ -17,9 +17,9 @@ import { ThemeProvider } from "@/components/provider/theme";
 
 // ui
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Header from "@/components/nav/header";
-import Footer from "@/components/nav/footer";
-import { TopNewsContent } from "@/components/nav/news";
+// import Header from "@/components/nav/header";
+// import Footer from "@/components/nav/footer";
+// import { TopNewsContent } from "@/components/nav/news";
 import { Toaster } from "react-hot-toast";
 
 export async function generateMetadata(): Promise<Metadata> {

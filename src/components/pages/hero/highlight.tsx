@@ -2,7 +2,6 @@
 
 import React, { useRef } from "react";
 import { motion, useInView } from "motion/react";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import {
   Boxes,
   Code,
@@ -13,9 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import {
-  CustomCardDescription,
   CustomCardHeader,
-  CustomCardTitle,
 } from "@/app/dashboard/account/(components)/customCard";
 
 interface HeroHighlightContentCardType {

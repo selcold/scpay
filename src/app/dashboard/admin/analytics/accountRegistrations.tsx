@@ -22,14 +22,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@nextui-org/button";
-import { Skeleton, Tooltip } from "@nextui-org/react";
+import { Skeleton } from "@nextui-org/react";
 import { getScPayAlldata } from "@/utils/supabase/scpay/req";
 
 const chartConfig = {
