@@ -1,27 +1,40 @@
-"use client";
+import React, { Suspense } from "react";
+import { Metadata } from "next";
+import { Skeleton } from "@nextui-org/react";
+import LinkScratch from "./(components)/linkScratch";
+import SettingAvatar from "./(components)/avatar";
+import { AccountSettingUserName } from "./(components)/userName";
+import { AccountSettingUserId } from "./(components)/userId";
+import { AccountSettingUserProfileBackgroundImage } from "./(components)/userProfileBackgroundImage";
 
-import React from "react";
-import { useUser } from "@/hooks/useUser";
-import { LoaderRound } from "@/components/ui/loading";
-import LinkScratch from "./linkScratch";
-import DataList from "./datalist";
-import SettingAvatar from "./avatar";
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "アカウント",
+  };
+}
 
-function AccountPage() {
-  const { user, loading } = useUser();
-
-  if (loading) {
-    return <LoaderRound />;
+async function AccountPage() {
+  function CustomSkeleton() {
+    return <Skeleton className="w-full h-full min-h-32 rounded-lg" />;
   }
-
   return (
-    <div className="flex flex-col w-full p-5">
-      <section>
-        <SettingAvatar scpay_user={user} />
-        {/* <hr className="w-full my-5" />
-        <DataList scpay_user={user} /> */}
-        <hr className="w-full my-5" />
-        <LinkScratch scpay_user={user} />
+    <div className="flex flex-col items-start max-w-[1024px] ml-0 mr-auto">
+      <section className="flex flex-col justify-start items-start gap-5">
+        <Suspense fallback={<CustomSkeleton />}>
+          <SettingAvatar />
+        </Suspense>
+        <Suspense fallback={<CustomSkeleton />}>
+          <LinkScratch />
+        </Suspense>
+        <Suspense fallback={<CustomSkeleton />}>
+          <AccountSettingUserName />
+        </Suspense>
+        <Suspense fallback={<CustomSkeleton />}>
+          <AccountSettingUserId />
+        </Suspense>
+        <Suspense fallback={<CustomSkeleton />}>
+          <AccountSettingUserProfileBackgroundImage />
+        </Suspense>
       </section>
     </div>
   );

@@ -3,7 +3,7 @@
 import config from "../../../richtpl.config";
 import React from "react";
 import { FaGithub } from "react-icons/fa";
-import { TLink } from "@/components/ui/Tcomps";
+import { TLink, TNextuiLink } from "@/components/ui/Tcomps";
 import { LogoVercelNextjs } from "@/components/ui/LogoVercelNextjs";
 import { ModeToggle } from "@/components/ui/ModeToggle";
 import { SearchCommandDialog } from "../ui/command-search";
@@ -17,8 +17,10 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   Link,
+  Button,
 } from "@nextui-org/react";
-import { Button } from "../ui/button";
+import LanguageSelest from "../ui/LanguageSelest";
+import { ScPayUserButton } from "../scpay/userButton";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -46,20 +48,50 @@ function Header() {
     );
   }
 
+  function NavCustomContent() {
+    return (
+      <>
+        <ScPayUserButton
+          responsiveClassName="hidden sm:!flex"
+          LoginButton={
+            <Button
+              className="hidden sm:!flex"
+              color="primary"
+              radius="full"
+              variant="light"
+              size="md"
+            >
+              ログイン
+            </Button>
+          }
+        />
+        <Link href="/dashboard">
+          <Button
+            className="hidden sm:!flex"
+            color="primary"
+            radius="full"
+            size="md"
+          >
+            ダッシュボード
+          </Button>
+        </Link>
+      </>
+    );
+  }
+
   return (
     <Navbar
       onMenuOpenChange={setIsMenuOpen}
-      className="border-b border-neutral-200 dark:border-neutral-800"
+      className={`${isMenuOpen && "fixed inset-0 !h-[var(--navbar-height)]"}`}
     >
-      <div className="flex justify-start items-center gap-4 h-full sm:!mr-5">
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:!hidden"
-        />
+      <NavbarContent
+        className="flex justify-start items-center gap-4 h-full sm:!mr-5"
+        justify="start"
+      >
         <NavbarBrand>
           <Logo />
         </NavbarBrand>
-      </div>
+      </NavbarContent>
       <NavbarContent className="hidden sm:!flex gap-4" justify="center">
         {config.themeConfig.header?.items?.nav?.map((item, index) => (
           <NavbarItem key={`NavbarItem-${item}.${index}`}>
@@ -73,96 +105,61 @@ function Header() {
           </NavbarItem>
         ))}
       </NavbarContent>
-      <NavbarContent className="hidden md:!flex gap-4" justify="end">
-        <NavbarItem>
-          <SearchCommandDialog minWidth={1024} />
-        </NavbarItem>
-        {config.themeConfig.header?.items?.project?.repository === "block" && (
-          <NavbarItem>
-            <Link
-              href={`https://github.com/${config.organizationName}/${config.projectName}`}
-              target="block"
-            >
+      <NavbarContent justify="end">
+        <NavCustomContent />
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="sm:!hidden"
+        />
+      </NavbarContent>
+      <NavbarMenu className="overflow-y-auto">
+        <NavbarMenuItem className="flex flex-col gap-2 mb-2">
+          <ScPayUserButton
+            yesLoginContentNull
+            LoginButton={
               <Button
-                variant="ghost"
-                className="w-10 h-10 p-0"
-                aria-label="GitHub project repository"
+                color="primary"
+                radius="lg"
+                variant="faded"
+                size="md"
+                className="w-full"
               >
-                <FaGithub className="text-[21px]" />
+                ログイン
               </Button>
-            </Link>
-          </NavbarItem>
-        )}
-        <NavbarItem>
-          <ModeToggle />
-        </NavbarItem>
-      </NavbarContent>
-      <NavbarContent className="flex md:!hidden gap-4" justify="end">
-        <NavbarItem>
-          {config.themeConfig.SearchCommand ? (
-            <SearchCommandDialog maxWidth={1024} />
-          ) : (
-            <>
-              {config.themeConfig.header?.items?.project?.repository ===
-                "block" && (
-                <Link
-                  href={`https://github.com/${config.organizationName}/${config.projectName}`}
-                  target="block"
-                >
-                  <Button
-                    variant="ghost"
-                    className="w-10 h-10 p-2"
-                    aria-label="GitHub project repository"
-                  >
-                    <FaGithub className="text-[21px]" />
-                  </Button>
-                </Link>
-              )}
-            </>
-          )}
-        </NavbarItem>
-      </NavbarContent>
-      <NavbarMenu className="flex flex-col justify-between pb-5">
-        <section
-          className="flex flex-col w-full overflow-y-auto"
-          style={{ height: "calc((100vh - 4rem) - 1.5rem)" }}
-          onClick={() => setIsMenuOpen(false)}
-        >
-          {config.themeConfig.header?.items?.nav?.map((item, index) => (
-            <NavbarMenuItem key={`NavbarMenuItem-${item}.${index}`}>
-              <TLink
-                target={item.target}
-                href={item.href}
-                i18n_text={item.i18n_text || false}
-                isNextuiLink
-              >
-                {item.label}
-              </TLink>
-            </NavbarMenuItem>
-          ))}
-        </section>
-        <div className="flex flex-row flex-wrap gap-4">
-          {config.themeConfig.header?.items?.project?.repository ===
-            "block" && (
-            <NavbarItem>
-              <Link
-                href={`https://github.com/${config.organizationName}/${config.projectName}`}
-                target="block"
-              >
-                <Button
-                  variant="ghost"
-                  className="w-10 h-10 p-0"
-                  aria-label="GitHub project repository"
-                >
-                  <FaGithub className="text-[21px]" />
-                </Button>
-              </Link>
-            </NavbarItem>
-          )}
-          <NavbarItem>
-            <ModeToggle />
-          </NavbarItem>
-        </div>
+            }
+          />
+          <Link href="/dashboard" className="w-full">
+            <Button color="primary" radius="lg" size="md" className="w-full">
+              ダッシュボード
+            </Button>
+          </Link>
+        </NavbarMenuItem>
+        {config.themeConfig.header?.items?.nav?.map((item, index) => (
+          <NavbarMenuItem key={`${item}-${index}`}>
+            <TNextuiLink
+              className="w-full"
+              size="lg"
+              target={item.target}
+              href={item.href}
+              i18n_text={item.i18n_text || false}
+            >
+              {item.label}
+            </TNextuiLink>
+          </NavbarMenuItem>
+        ))}
+        <NavbarMenuItem className="flex flex-wrap justify-between items-center gap-2 mt-auto pb-5">
+          <div className="flex gap-1">
+            <LanguageSelest />
+          </div>
+          <ScPayUserButton
+            noLoginContentNull
+            LoginButton={
+              <Button color="primary" radius="lg" variant="faded" size="md">
+                ログイン
+              </Button>
+            }
+          />
+        </NavbarMenuItem>
       </NavbarMenu>
     </Navbar>
   );

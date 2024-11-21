@@ -1,12 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { deleteCookie } from "cookies-next/client";
 
-export function useScPayAccountLogOut() {
-  const router = useRouter();
-  
-  return () => {
-    localStorage.removeItem("scpay-account-token");
-    router.refresh(); // ページをリフレッシュ
-  };
-}
+export const ScPayAccountLogout = () => {
+  deleteCookie("scpay-account-token");
+  if (typeof window !== undefined) {
+    window.location.reload();
+  }
+};
