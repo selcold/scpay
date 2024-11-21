@@ -4,9 +4,7 @@ import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { InfiniteMovingCards } from "./infinite-moving-cards";
 import {
-  CustomCardDescription,
   CustomCardHeader,
-  CustomCardTitle,
 } from "@/app/dashboard/account/(components)/customCard";
 
 function CustomInfiniteMovingCards({

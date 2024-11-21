@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { motion, useInView } from "motion/react";

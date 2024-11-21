@@ -2,13 +2,12 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useScPayUser } from "@/hooks/useScPayUser";
-import { cn } from "@/lib/utils";
 import { Skeleton } from "@nextui-org/react";
 import { ChevronsUpDown } from "lucide-react";
 import React from "react";
 
 export function SidebarUser() {
-  const { user, loading, error } = useScPayUser();
+  const { user } = useScPayUser();
 
   return (
     <>
@@ -27,7 +26,7 @@ export function SidebarUser() {
 }
 
 export function UserAvatar() {
-  const { user, loading } = useScPayUser();
+  const { user } = useScPayUser();
   return (
     <Avatar className="h-8 w-8 rounded-lg">
       <AvatarImage

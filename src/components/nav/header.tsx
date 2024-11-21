@@ -2,11 +2,8 @@
 
 import config from "../../../richtpl.config";
 import React from "react";
-import { FaGithub } from "react-icons/fa";
 import { TLink, TNextuiLink } from "@/components/ui/Tcomps";
 import { LogoVercelNextjs } from "@/components/ui/LogoVercelNextjs";
-import { ModeToggle } from "@/components/ui/ModeToggle";
-import { SearchCommandDialog } from "../ui/command-search";
 
 import {
   Navbar,

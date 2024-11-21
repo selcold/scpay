@@ -6,15 +6,12 @@ import {
   DropdownMenu,
   DropdownItem,
   Avatar,
-  Button,
   Link,
-  ButtonProps,
   Skeleton,
   DropdownSection,
   User,
 } from "@nextui-org/react";
 import { useScPayUser } from "@/hooks/useScPayUser";
-import { cn } from "@/lib/utils";
 import { ScPayAccountLogout } from "./logout";
 import { useTheme } from "next-themes";
 import React from "react";
@@ -62,7 +59,7 @@ const ScPayUserButton = React.forwardRef<HTMLDivElement, ScPayUserButtonProps>(
           return null;
         }
         return (
-          <Dropdown placement="bottom-end">
+          <Dropdown placement="bottom-end" {...props} ref={ref}>
             <DropdownTrigger className={responsiveClassName}>
               <Avatar
                 isBordered

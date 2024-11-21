@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  LogInButton,
   LogIned,
   LogOuted,
   ScratchAuthLogin,

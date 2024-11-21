@@ -14,15 +14,10 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import {
-  BookUser,
-  Building2,
   ChevronRight,
-  ChevronsUpDown,
-  CommandIcon,
   Folder,
   Forward,
   MoreHorizontal,
-  Plus,
   Trash2,
 } from "lucide-react";
 import React from "react";
@@ -33,7 +28,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { SelectLanguageButton, SelectThemeButton } from "./change";
-import { ScPayUserType } from "@/utils/supabase/scpay";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,11 +39,9 @@ import {
 export function SidebarNavContent({
   activeTeam,
   nav,
-  user,
 }: {
   activeTeam: DashboardTeamsType | null;
   nav: DashboardNavType;
-  user: ScPayUserType | null;
 }) {
   function SidebarNavAdmin() {
     return (

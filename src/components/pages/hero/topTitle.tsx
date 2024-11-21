@@ -4,7 +4,6 @@ import React from "react";
 import { motion } from "motion/react";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/react";
-import toast from "react-hot-toast";
 
 export function HeroTopTitle() {
   return (

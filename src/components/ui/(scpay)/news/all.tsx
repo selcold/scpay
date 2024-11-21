@@ -4,12 +4,10 @@ import { NewsType } from "@/utils/supabase/scpay";
 import { reqScPayAPI } from "@/utils/supabase/scpay/req";
 import {
   Card,
-  CardBody,
   CardHeader,
   Pagination,
   Skeleton,
 } from "@nextui-org/react";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { motion, useInView } from "motion/react";
