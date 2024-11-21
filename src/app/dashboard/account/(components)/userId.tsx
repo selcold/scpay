@@ -29,8 +29,9 @@ export function AccountSettingUserId() {
   const toggleEdit = () => setIsEdit(!isEdit);
 
   const schema = z.object({
-    username: z
+    user_id: z
       .string()
+      .regex(/^[A-Za-z0-9]*$/, "半角英数字のみで入力してください")
       .min(3, "3文字以上で入力してください")
       .max(30, "30文字以内で入力してください"),
   });
@@ -53,14 +54,14 @@ export function AccountSettingUserId() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: user?.id,
-        item: "username",
-        data: data.username,
+        item: "user_id",
+        data: data.user_id,
       }),
     });
 
     if (res.ok) {
       console.log("データの更新が完了しました");
-      toast.success("ユーザー名の変更が完了しました")
+      toast.success("ユーザーIDの変更が完了しました");
       setIsEdit(false);
     } else {
       console.warn("更新エラー:", res.message, res.error);
@@ -92,21 +93,21 @@ export function AccountSettingUserId() {
     >
       <CustomCard>
         <CustomCardHeader>
-          <CustomCardTitle>ユーザー名</CustomCardTitle>
+          <CustomCardTitle>ユーザーID</CustomCardTitle>
           <CustomCardDescription>
-            ご自身やご自分のコンテンツを示すユーザー名を入力してください。
+            ご自身やご自分のコンテンツを示すユーザーIDを入力してください。
           </CustomCardDescription>
         </CustomCardHeader>
-        <CustomCardBody className="gap-2 sm:!flex-row">
+        <CustomCardBody className="gap-2 flex-col sm:!flex-row">
           <Input
-            {...register("username")}
-            value={isEdit ? formNewData || user.username : user.username}
+            {...register("user_id")}
+            value={isEdit ? formNewData || user.user_id : user.user_id}
             variant="faded"
             labelPlacement="outside"
             isRequired
             isReadOnly={!isEdit}
             isDisabled={formLoading}
-            isInvalid={isEdit && errors.username ? true : false}
+            isInvalid={isEdit && errors.user_id ? true : false}
             endContent={
               <button
                 className="focus:outline-none"
@@ -138,9 +139,9 @@ export function AccountSettingUserId() {
           )}
         </CustomCardBody>
       </CustomCard>
-      {isEdit && (errors.username?.message as string) && (
+      {isEdit && (errors.user_id?.message as string) && (
         <p className="text-red-500 text-sm">
-          {errors.username?.message as string}
+          {errors.user_id?.message as string}
         </p>
       )}
       {error && <div className="text-red-500 text-sm mt-2">{error}</div>}

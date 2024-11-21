@@ -6,6 +6,13 @@ import AccountRegistrations from "./accountRegistrations";
 import { Skeleton } from "@nextui-org/react";
 import AccountScratchLinked from "./accountScratchLinked";
 import AccountStatusAdmin from "./accountStatusAdmin";
+import { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "アナリティクス",
+  };
+}
 
 async function AdminAnalyticsPage() {
   return (

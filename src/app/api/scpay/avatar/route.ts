@@ -62,10 +62,12 @@ export async function POST(request: Request) {
     // 画像URLの生成
     const imageUrl = `https://mtthwkpbwxbzwwwwfefl.supabase.co/storage/v1/object/public/profile-pictures/${data.path}`;
 
+    const update_date = new Date();
+
     // ユーザー情報を更新する（仮にIDがユーザーに紐付いていると仮定）
     const { error: updateError } = await supabase
       .from("users")
-      .update({ profile: { image: imageUrl } })
+      .update({ profile: { image: imageUrl }, updated_at: update_date })
       .eq("id", userId);
 
     if (updateError) {
@@ -146,6 +148,8 @@ export async function DELETE(request: Request) {
         );
       }
 
+      const update_date = new Date();
+
       // ユーザー情報の更新
       const { error: updateError } = await supabase
         .from("users")
@@ -154,6 +158,7 @@ export async function DELETE(request: Request) {
             image:
               "https://mtthwkpbwxbzwwwwfefl.supabase.co/storage/v1/object/public/profile-pictures/avatar.png",
           },
+          updated_at: update_date
         })
         .eq("id", req.userId);
 

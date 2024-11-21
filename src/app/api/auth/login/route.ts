@@ -56,6 +56,21 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const now = new Date();
+
+  // ユーザー情報を更新する
+  const { error: updateError } = await supabase
+    .from("users")
+    .update({ last_sign_in_at: now })
+    .eq("email", email);
+
+  if (updateError) {
+    return NextResponse.json(
+      { ok: false, message: "ユーザー情報の更新に失敗しました" },
+      { status: 500 }
+    );
+  }
+
   // JWTを発行
   const token = jwt.sign(
     { userId: user.id },

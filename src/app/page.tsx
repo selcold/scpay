@@ -10,6 +10,8 @@ import HeroTopGradient from "@/components/pages/hero/topGradient";
 import HeroPricingContent from "@/components/pages/hero/pricing";
 import HeroTeamMembersContent from "@/components/pages/hero/teamMembers";
 import { TopNewsContent } from "@/components/nav/news";
+import { HeroAnimateBrands } from "@/components/pages/hero/animateBrands";
+import { HeroHighlightContent } from "@/components/pages/hero/highlight";
 
 export default async function Page() {
   return (
@@ -22,11 +24,12 @@ export default async function Page() {
         <HeroTopGradient />
       </div>
       <HeroTeamMembersContent />
+      <HeroAnimateBrands />
+      <HeroHighlightContent />
       <HeroPricingContent />
+      <TopNewsContents />
       <div className="bg-neutral-100 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
-        <div className="container flex flex-col items-start max-w-[1024px] px-8 mx-auto">
-          <TopNewsContents />
-        </div>
+        <div className="container flex flex-col items-start max-w-[1024px] px-8 mx-auto"></div>
       </div>
       <Footer />
     </>

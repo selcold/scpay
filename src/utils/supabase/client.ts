@@ -8,3 +8,4 @@ export function createClient() {
     process.env.SUPABASE_ACCOUNT_SECRET_KEY!
   )
 }
+

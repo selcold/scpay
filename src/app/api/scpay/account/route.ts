@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/client";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const header = await req.headers;
   const authorization = header.get("authorization")?.split(" ")[1];
 
@@ -17,42 +17,45 @@ export async function POST(req: NextRequest) {
       { status: 403 }
     );
   }
-  const { userId, item, data } = await req.json();
+
+  const url = new URL(req.url);
+  const userId = url.searchParams.get("userId");
 
   const supabase = createClient();
 
   try {
     // ユーザーが指定されているか確認
-    if (!userId || !item) {
+    if (!userId) {
       return NextResponse.json(
         {
           ok: false,
-          message: "ユーザーID、項目、およびデータが必要です",
+          message: "ユーザーIDが必要です",
         },
         { status: 400 }
       );
     }
 
     // 指定された項目に基づいてデータを更新
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("users")
-      .update({ [item]: data }) // item に基づいてデータを動的に更新
-      .eq("id", userId); // userId に基づいて特定のユーザーを更新
+      .select("*")
+      .eq("user_id", userId)
+      .single();
 
     if (error) {
       return NextResponse.json(
         {
           ok: false,
-          message: "データの設定中にエラーが発生しました",
+          message: "データの取得中にエラーが発生しました",
           error: error,
-          error_message: error.message,
+          error_massage: error.message,
         },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
-      { ok: true, message: "データの設定が成功しました" },
+      { ok: true, message: "データの取得が成功しました", data: data },
       { status: 201 }
     );
   } catch (error) {

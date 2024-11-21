@@ -40,11 +40,11 @@ function LinkScratch() {
 
   // スクラッチアカウントの連携・解除処理
   const handleLinkUnlinkScratch = async (link: string | null) => {
-    if (localUser && user) {
+    if (localUser) {
       setLoading(true);
       const res = await reqScPayAPI({
         url: "/api/scpay/account/set",
-        method: "POST",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -120,13 +120,16 @@ function LinkScratch() {
         </LogOuted>
         <LogIned>
           {user && (
-            <Button
-              onClick={() => handleLinkUnlinkScratch(user.username)}
-              color="primary"
-              isLoading={loading}
-            >
-              アカウントを接続する
-            </Button>
+            <>
+              <UserButton />
+              <Button
+                onClick={() => handleLinkUnlinkScratch(user.username)}
+                color="primary"
+                isLoading={loading}
+              >
+                アカウントを接続する
+              </Button>
+            </>
           )}
         </LogIned>
       </>

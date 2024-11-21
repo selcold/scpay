@@ -1,27 +1,19 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
+import { motion, useInView } from "motion/react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
+import remarkGfm from "remark-gfm";
+import { AlertCircle } from "lucide-react";
+import { Tab, Tabs, Skeleton, Button } from "@nextui-org/react";
+import ReactMarkdown from "react-markdown";
 import { NewsType } from "@/utils/supabase/scpay";
 import { reqScPayAPI } from "@/utils/supabase/scpay/req";
-import toast from "react-hot-toast";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import Link from "next/link";
-import {
-  Tab,
-  Tabs,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-  Skeleton,
-  Button,
-} from "@nextui-org/react";
 import { ScPayAdminProviderContent } from "@/components/admin/block";
 import { NewsEditContent } from "./edit";
-import { useSearchParams } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "../../alert";
-import { AlertCircle } from "lucide-react";
 
 export function formatISODate(isoString: any) {
   // ISO文字列をDateオブジェクトに変換
@@ -38,25 +30,17 @@ export function formatISODate(isoString: any) {
 
 export function NewsCardSkeleton() {
   return (
-    <Card className="w-full p-5">
-      <CardHeader className="flex flex-wrap justify-between items-end gap-2 w-full">
-        <h1 className="font-bold text-xl sm:!text-2xl md:!text-3xl w-1/3">
-          <Skeleton className="w-full h-7 sm:!h-8 md:!h-9 rounded-lg" />
-        </h1>
-        <div className="flex flex-col w-1/3 gap-1">
-          <div className="flex justify-between items-center">
-            <Skeleton className="w-full h-4 rounded-lg" />
-          </div>
-          <div className="flex justify-between items-center">
-            <Skeleton className="w-full h-4 rounded-lg" />
-          </div>
-        </div>
-      </CardHeader>
-      <Divider className="my-2" />
-      <CardBody>
-        <Skeleton className="w-full h-36 rounded-lg" />
-      </CardBody>
-    </Card>
+    <div className="w-full p-5">
+      <div className="flex flex-col justify-center items-center w-full py-5 sm:!py-10 md:!py-20 mb-5">
+        <Skeleton className="w-full h-7 sm:!h-8 md:!h-9 lg:!h-10 rounded-lg mb-3" />
+        <Skeleton className="w-full h-4 rounded-lg" />
+      </div>
+      <div className="flex flex-col gap-3">
+        <Skeleton className="w-full h-6 rounded-lg" />
+        <Skeleton className="w-2/3 h-6 rounded-lg" />
+        <Skeleton className="w-1/3 h-6 rounded-lg" />
+      </div>
+    </div>
   );
 }
 
@@ -80,7 +64,7 @@ function NewsContentView({ id }: { id: string }) {
         url: `/api/scpay/news?id=${id}`,
         method: "GET",
       });
-      if (res.ok && res.data) {
+      if (res.ok) {
         setNews(res.data);
         setNewsPreview(res.data);
       } else {
@@ -93,72 +77,101 @@ function NewsContentView({ id }: { id: string }) {
   }, []);
 
   function NewsContentNow() {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true });
+    const ref2 = useRef(null);
+    const isInView2 = useInView(ref2, { once: true });
+
     if (isLoading) {
       return <NewsCardSkeleton />;
     }
 
     if (error) {
       return (
-        <Alert variant="destructive">
+        <div className="flex flex-col justify-center items-center w-full h-full">
+          <motion.h1
+            ref={ref}
+            style={{
+              filter: isInView ? "blur(0px)" : "blur(10px)",
+              transform: isInView ? "none" : "translateY(100px)",
+              opacity: isInView ? 1 : 0,
+              transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) ",
+            }}
+            className="bg-clip-text text-transparent bg-gradient-to-r from-[#000000] to-[#00000066] dark:from-[#FFFFFF] dark:to-[#FFFFFF66] font-bold text-2xl sm:!text-3xl md:!text-4xl lg:!text-5xl mb-3"
+          >
+            ニュース
+          </motion.h1>
+          <motion.p
+            ref={ref2}
+            style={{
+              filter: isInView2 ? "blur(0px)" : "blur(10px)",
+              transform: isInView2 ? "none" : "translateY(100px)",
+              opacity: isInView2 ? 1 : 0,
+              transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) ",
+            }}
+            className="text-sm text-foreground-500"
+          >
+            あなたがアクセスしようとしたニュースは削除された、または非公開になっている可能性があります。
+          </motion.p>
+        <Alert variant="destructive" className="mt-5">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>エラー</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
+        </div>
       );
     }
 
     if (news) {
       return (
-        <Card className="p-1 sm:!p-3 md:!p-5">
-          <CardHeader className="flex flex-wrap justify-between items-end gap-2">
-            <h1 className="font-bold text-xl sm:!text-2xl md:!text-3xl">
-              {news?.title || (
-                <Skeleton className="w-full h-7 sm:!h-8 md:!h-9 rounded-lg" />
-              )}
-            </h1>
-            <div className="flex flex-col w-auto">
-              <div className="flex justify-between items-center gap-1">
-                <span className="text-sm mr-auto">作成日:</span>
-                <span className="text-xs">
-                  {formatISODate(news?.created_at) || (
-                    <Skeleton className="w-full h-4 rounded-lg" />
-                  )}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm mr-auto">更新日:</span>
-                <span className="text-xs">
-                  {formatISODate(news?.updated_at) || (
-                    <Skeleton className="w-full h-4 rounded-lg" />
-                  )}
-                </span>
-              </div>
-            </div>
-          </CardHeader>
-          <Divider className="my-2" />
-          <CardBody>
-            <Suspense
-              fallback={<Skeleton className="w-full h-16 rounded-lg" />}
+        <>
+          <div className="flex flex-col justify-center items-center w-full py-5 sm:!py-10 md:!py-20 mb-5">
+            <motion.h1
+              ref={ref}
+              style={{
+                filter: isInView ? "blur(0px)" : "blur(10px)",
+                transform: isInView ? "none" : "translateY(100px)",
+                opacity: isInView ? 1 : 0,
+                transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) ",
+              }}
+              className="bg-clip-text text-transparent bg-gradient-to-r from-[#000000] to-[#00000066] dark:from-[#FFFFFF] dark:to-[#FFFFFF66] font-bold text-2xl sm:!text-3xl md:!text-4xl lg:!text-5xl mb-3"
             >
-              <ReactMarkdown
-                className="markdown-body"
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  a(props) {
-                    const { children, href } = props;
-                    return (
-                      <Link href={href || "/"} target="_blank">
-                        {children}
-                      </Link>
-                    );
-                  },
-                }}
-              >
-                {news?.description}
-              </ReactMarkdown>
-            </Suspense>
-          </CardBody>
-        </Card>
+              {news.title}
+            </motion.h1>
+            <motion.p
+              ref={ref2}
+              style={{
+                filter: isInView2 ? "blur(0px)" : "blur(10px)",
+                transform: isInView2 ? "none" : "translateY(100px)",
+                opacity: isInView2 ? 1 : 0,
+                transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) ",
+              }}
+              className="text-sm text-foreground-500"
+            >
+              {formatISODate(news?.created_at) || (
+                <Skeleton className="w-full h-4 rounded-lg" />
+              )}
+            </motion.p>
+          </div>
+          <Suspense fallback={<Skeleton className="w-full h-16 rounded-lg" />}>
+            <ReactMarkdown
+              className="markdown-body"
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a(props) {
+                  const { children, href } = props;
+                  return (
+                    <Link href={href || "/"} target="_blank">
+                      {children}
+                    </Link>
+                  );
+                },
+              }}
+            >
+              {news?.description}
+            </ReactMarkdown>
+          </Suspense>
+        </>
       );
     }
 
@@ -174,41 +187,34 @@ function NewsContentView({ id }: { id: string }) {
   }
 
   return (
-    <div className="flex flex-col justify-center gap-3 w-full">
+    <div className="flex flex-col justify-start gap-3 w-full h-full">
       <ScPayAdminProviderContent noAdmin={<NewsContentNow />}>
         {news ? (
           <Tabs
             aria-label="Options"
             selectedKey={selected as string | null | undefined}
             onSelectionChange={setSelected}
+            variant="light"
           >
             <Tab key="now" title="現在">
               <NewsContentNow />
             </Tab>
             <Tab key="preview" title="プレビュー">
               {newsPreview ? (
-                <Card className="p-1 sm:!p-3 md:!p-5">
-                  <CardHeader className="flex flex-wrap justify-between items-end gap-2">
-                    <h1 className="font-bold text-xl sm:!text-2xl md:!text-3xl">
-                      {newsPreview?.title}
-                    </h1>
-                    <div className="flex flex-col w-auto">
-                      <div className="flex justify-between items-center gap-1">
-                        <span className="text-sm mr-auto">作成日:</span>
-                        <span className="text-xs">
-                          {formatISODate(newsPreview?.created_at)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm mr-auto">更新日:</span>
-                        <span className="text-xs">
-                          {formatISODate(newsPreview?.updated_at)}
-                        </span>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <Divider className="my-2" />
-                  <CardBody>
+                <>
+                  <div className="flex flex-col justify-center items-center w-full py-5 sm:!py-10 md:!py-20 mb-5">
+                    <motion.h1 className="bg-clip-text text-transparent bg-gradient-to-r from-[#000000] to-[#00000066] dark:from-[#FFFFFF] dark:to-[#FFFFFF66] font-bold text-2xl sm:!text-3xl md:!text-4xl lg:!text-5xl mb-3">
+                      {newsPreview.title}
+                    </motion.h1>
+                    <motion.p className="text-sm text-foreground-500">
+                      {formatISODate(newsPreview?.created_at) || (
+                        <Skeleton className="w-full h-4 rounded-lg" />
+                      )}
+                    </motion.p>
+                  </div>
+                  <Suspense
+                    fallback={<Skeleton className="w-full h-16 rounded-lg" />}
+                  >
                     <ReactMarkdown
                       className="markdown-body"
                       remarkPlugins={[remarkGfm]}
@@ -225,8 +231,8 @@ function NewsContentView({ id }: { id: string }) {
                     >
                       {newsPreview?.description}
                     </ReactMarkdown>
-                  </CardBody>
-                </Card>
+                  </Suspense>
+                </>
               ) : (
                 <NewsCardSkeleton />
               )}
@@ -243,7 +249,7 @@ function NewsContentView({ id }: { id: string }) {
           <NewsContentNow />
         )}
       </ScPayAdminProviderContent>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center mt-20">
         <Link href="/news">
           <Button>一覧を見る</Button>
         </Link>

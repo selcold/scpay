@@ -10,9 +10,10 @@ import {
   Skeleton,
 } from "@nextui-org/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "../../alert";
+import { useEffect, useRef, useState } from "react";
 import { AlertCircle } from "lucide-react";
+import { motion, useInView } from "motion/react";
+import { Alert, AlertDescription, AlertTitle } from "../../alert";
 
 function formatISODate(isoString: any) {
   // ISO文字列をDateオブジェクトに変換
@@ -29,14 +30,56 @@ function formatISODate(isoString: any) {
   return `${year}.${month}.${day}`;
 }
 
+function NewsCardContent({ item }: { item: NewsType }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  return (
+    <motion.a
+      id={`news-${item.id}`}
+      href={`/news/${item.id}`}
+      ref={ref}
+      style={{
+        filter: isInView ? "blur(0px)" : "blur(10px)",
+        transform: isInView ? "none" : "translateY(100px)",
+        opacity: isInView ? 1 : 0,
+        transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) ",
+      }}
+    >
+      <Card>
+        <CardHeader className="flex flex-wrap justify-start items-center gap-2">
+          <div className="flex flex-col w-auto mr-5">
+            <span className="text-base">
+              {formatISODate(item.created_at) || (
+                <Skeleton className="w-full h-4 rounded-lg" />
+              )}
+            </span>
+          </div>
+          <h1 className="font-bold text-xl sm:!text-2xl">
+            {item.title || (
+              <Skeleton className="w-full h-7 sm:!h-8 md:!h-9 rounded-lg" />
+            )}
+          </h1>
+        </CardHeader>
+      </Card>
+    </motion.a>
+  );
+}
+
 export function NewsContentAll() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [news, setNews] = useState<NewsType[]>([]);
   const [total, setTotal] = useState<number>(0);
+  const [news, setNews] = useState<NewsType[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [error, setError] = useState<string | undefined>(undefined);
 
   const itemsPerPage = 10;
+
+  const onScrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   useEffect(() => {
     const getNewsCount = async () => {
@@ -46,7 +89,7 @@ export function NewsContentAll() {
         url: "/api/scpay/news/count",
         method: "GET",
       });
-      if (res.ok && res.data) {
+      if (res.ok) {
         setTotal(res.data);
       } else {
         setError(res.message);
@@ -60,13 +103,14 @@ export function NewsContentAll() {
     const getNewsContent = async () => {
       setIsLoading(true);
       setError(undefined);
+      onScrollToTop();
       const res = await reqScPayAPI({
         url: `/api/scpay/news?limit=${itemsPerPage}&offset=${
           (currentPage - 1) * itemsPerPage
         }`,
         method: "GET",
       });
-      if (res.ok && res.data) {
+      if (res.ok) {
         setNews(res.data);
       } else {
         console.error(res.error, res.error_message);
@@ -159,18 +203,6 @@ export function NewsContentAll() {
   function NewsContent() {
     if (isLoading) {
       return <NewsSkeleton />;
-    } else {
-      if (!news) {
-        return (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>データ取得</AlertTitle>
-            <AlertDescription>
-              ニュースが存在しないまたは取得できませんでした。
-            </AlertDescription>
-          </Alert>
-        );
-      }
     }
 
     if (error) {
@@ -183,67 +215,38 @@ export function NewsContentAll() {
       );
     }
 
-    if (news.length > 0) {
+    if (news.length === 0) {
       return (
-        <>
-          {news.map((item, index) => {
-            return (
-              <Link
-                key={index}
-                id={`news-${item.id}`}
-                href={`/news/${item.id}`}
-              >
-                <Card>
-                  <CardHeader className="flex flex-wrap justify-start items-center gap-2">
-                    <div className="flex flex-col w-auto mr-5">
-                      <span className="text-base">
-                        {formatISODate(item.created_at) || (
-                          <Skeleton className="w-full h-4 rounded-lg" />
-                        )}
-                      </span>
-                    </div>
-                    <h1 className="font-bold text-xl sm:!text-2xl">
-                      {item.title || (
-                        <Skeleton className="w-full h-7 sm:!h-8 md:!h-9 rounded-lg" />
-                      )}
-                    </h1>
-                  </CardHeader>
-                </Card>
-              </Link>
-            );
-          })}
-        </>
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>データ取得</AlertTitle>
+          <AlertDescription>ニュースが存在しません</AlertDescription>
+        </Alert>
       );
     }
 
     return (
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>データ取得</AlertTitle>
-        <AlertDescription>
-          ニュースが存在しないまたは取得できませんでした。
-        </AlertDescription>
-      </Alert>
+      <>
+        {news.map((item, index) => {
+          return <NewsCardContent key={index} item={item} />;
+        })}
+      </>
     );
   }
 
   return (
     <div className="flex flex-col justify-center items-center gap-2 w-full h-full">
-      {error ? (
-        <div className="flex">{error}</div>
-      ) : (
-        <div className="flex flex-col justify-start items-center gap-3 w-full h-full">
-          <section
-            id="news"
-            className="flex flex-col justify-center items-stretch gap-3 w-full max-w-2xl"
-          >
-            <NewsContent />
-          </section>
-          <div className="flex flex-col justify-center items-center w-full">
-            {news.length > 0 && <NewsPagination />}
-          </div>
+      <div className="flex flex-col justify-start items-center gap-3 w-full h-full">
+        <section
+          id="news"
+          className="flex flex-col justify-center items-stretch gap-3 w-full max-w-2xl"
+        >
+          <NewsContent />
+        </section>
+        <div className="flex flex-col justify-center items-center w-full">
+          {news.length > 0 && <NewsPagination />}
         </div>
-      )}
+      </div>
     </div>
   );
 }

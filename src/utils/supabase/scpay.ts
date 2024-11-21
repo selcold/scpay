@@ -42,6 +42,9 @@ export interface ScPayUserType {
   status: string; // default active
   profile: {
     image: string;
+    background?: {
+      image?: string;
+    };
   };
   history: Record<string, any> | null;
   connection: Record<string, any> | null;

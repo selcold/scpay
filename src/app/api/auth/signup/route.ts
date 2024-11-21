@@ -38,11 +38,23 @@ export async function POST(req: NextRequest) {
     // パスワードのハッシュ化
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    function generateUserId(length = 30) {
+      const chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let result = "";
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+    const userId = username + generateUserId(30 - (username as string).length);
+
     // 新規ユーザーをSupabaseのusersテーブルに追加
     const { error } = await supabase.from("users").insert([
       {
-        username,
-        email,
+        username: username,
+        user_id: userId,
+        email: email,
         encrypted_password: hashedPassword,
         profile: {
           image:
@@ -79,7 +91,7 @@ export async function POST(req: NextRequest) {
           ok: false,
           message: "ユーザー登録中にエラーが発生しました",
           error: error,
-          error_massage: error.message
+          error_massage: error.message,
         },
         { status: 500 }
       );

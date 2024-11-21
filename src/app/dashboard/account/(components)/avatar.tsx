@@ -7,7 +7,13 @@ import { ScPayUserType } from "@/utils/supabase/scpay";
 import ScPayUser from "./scpayUser";
 import toast from "react-hot-toast";
 import { reqScPayAPI } from "@/utils/supabase/scpay/req";
-import { CustomCard, CustomCardBody, CustomCardDescription, CustomCardHeader, CustomCardTitle } from "./customCard";
+import {
+  CustomCard,
+  CustomCardBody,
+  CustomCardDescription,
+  CustomCardHeader,
+  CustomCardTitle,
+} from "./customCard";
 
 function SettingAvatar() {
   const { scpayUser, scpayUser_loading } = ScPayUser();
@@ -124,7 +130,7 @@ function SettingAvatar() {
   return (
     <CustomCard>
       <CustomCardHeader>
-        <CustomCardTitle>アイコン設定</CustomCardTitle>
+        <CustomCardTitle>アイコン</CustomCardTitle>
         <CustomCardDescription>
           アップロード後反映に時間がかかることがあります
         </CustomCardDescription>

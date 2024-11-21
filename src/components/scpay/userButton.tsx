@@ -42,15 +42,12 @@ const ScPayUserButton = React.forwardRef<HTMLDivElement, ScPayUserButtonProps>(
     const theme = useTheme();
 
     const handleThemeChange = (setThemeValue: string) => {
-      console.log("setThemeValue:", setThemeValue);
       if (setThemeValue === "Dark" || setThemeValue === "dark") {
         theme.setTheme("dark");
-        console.log("set:", setThemeValue);
         return;
       }
       if (setThemeValue === "Light" || setThemeValue === "light") {
         theme.setTheme("light");
-        console.log("set:", setThemeValue);
         return;
       }
       theme.setTheme("system");

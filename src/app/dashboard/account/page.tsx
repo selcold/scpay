@@ -1,9 +1,11 @@
 import React, { Suspense } from "react";
+import { Metadata } from "next";
 import { Skeleton } from "@nextui-org/react";
 import LinkScratch from "./(components)/linkScratch";
 import SettingAvatar from "./(components)/avatar";
+import { AccountSettingUserName } from "./(components)/userName";
 import { AccountSettingUserId } from "./(components)/userId";
-import { Metadata } from "next";
+import { AccountSettingUserProfileBackgroundImage } from "./(components)/userProfileBackgroundImage";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -25,7 +27,13 @@ async function AccountPage() {
           <LinkScratch />
         </Suspense>
         <Suspense fallback={<CustomSkeleton />}>
+          <AccountSettingUserName />
+        </Suspense>
+        <Suspense fallback={<CustomSkeleton />}>
           <AccountSettingUserId />
+        </Suspense>
+        <Suspense fallback={<CustomSkeleton />}>
+          <AccountSettingUserProfileBackgroundImage />
         </Suspense>
       </section>
     </div>
